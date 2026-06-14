@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ConnectX – Login</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="ConnectX"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
@@ -15,12 +19,12 @@
 
       <div class="input-group">
         <label>Email</label>
-        <input type="email" id="email" placeholder="you@example.com" />
+        <input type="email" id="email" placeholder="you@example.com"/>
       </div>
 
       <div class="input-group">
         <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••" />
+        <input type="password" id="password" placeholder="••••••••"/>
       </div>
 
       <button class="btn btn-primary" onclick="login()">Log In</button>
@@ -35,6 +39,12 @@
 
   <script type="module">
     import { supabase } from './supabase.js'
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+    }
+
     window.login = async function () {
       const email    = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
