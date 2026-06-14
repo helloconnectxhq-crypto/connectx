@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ConnectX – Sign Up</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="logo">ConnectX</div>
+      <div class="tagline">Join the community</div>
+
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="rijanthapa" />
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Min 6 characters" />
+      </div>
+
+      <button class="btn btn-primary" onclick="signup()">Create Account</button>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="switch-text">
+        Already have an account? <a href="index.html">Log In</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabase.js'
+    window.signup = async function () {
+      const username = document.getElementById('username').value.trim().toLowerCase()
+      const email    = document.getElementById('email').value.trim()
+      const password = document.getElementById('password').value
+      const msg      = document.getElementById('msg')
+      msg.className  = 'msg'
+      msg.textContent = ''
+
+      if (!username || !email || !password) {
+        msg.className = 'msg error'
+        msg.textContent = 'Please fill in all fields.'
+        return
+      }
+      if (password.length < 6) {
+        msg.className = 'msg error'
+        msg.textContent = 'Password must be at least 6 characters.'
+        return
+      }
+
+      // 1. Create auth account
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        msg.className = 'msg error'
+        msg.textContent = error.message
+        return
+      }
+
+      // 2. Save profile to database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({ id: data.user.id, username, email })
+
+      if (profileError) {
+        msg.className = 'msg error'
+        msg.textContent = 'Account created but profile save failed: ' + profileError.message
+        return
+      }
+
+      msg.className = 'msg success'
+      msg.textContent = '🎉 Account created! Redirecting...'
+      setTimeout(() => window.location.href = 'feed.html', 1500)
+    }
+  </script>
+
+</body>
+</html>

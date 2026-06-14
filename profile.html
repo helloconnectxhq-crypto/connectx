@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ConnectX – Profile</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    * { box-sizing: border-box; }
+
+    .profile-page {
+      padding-top: 60px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ===== COVER PHOTO ===== */
+    .cover-wrapper {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #6C63FF 0%, #00D4AA 50%, #FF6584 100%);
+      cursor: pointer;
+    }
+
+    .cover-wrapper img.cover-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .cover-wrapper:hover img.cover-img { transform: scale(1.03); }
+
+    .cover-edit-btn {
+      position: absolute;
+      bottom: 12px; right: 16px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .cover-edit-btn:hover { background: rgba(108,99,255,0.8); }
+
+    /* ===== PROFILE INFO ===== */
+    .profile-info {
+      background: var(--surface);
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    /* Avatar */
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-top: -52px;
+      margin-bottom: 14px;
+    }
+
+    .profile-avatar-img {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--surface);
+      display: block;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+    }
+
+    .avatar-initial {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      border: 4px solid var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; font-weight: 800; color: #fff;
+    }
+
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      width: 30px; height: 30px;
+      background: var(--violet);
+      border: 3px solid var(--surface);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .avatar-edit-btn:hover { background: var(--violet-dark); transform: scale(1.1); }
+
+    /* Name & Info */
+    .profile-name {
+      font-size: 24px; font-weight: 800;
+      color: var(--text); margin-bottom: 2px;
+    }
+
+    .profile-username {
+      font-size: 14px; color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .profile-bio {
+      font-size: 14px; color: var(--text);
+      line-height: 1.7; margin-bottom: 12px;
+      max-width: 480px;
+    }
+
+    .profile-meta {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; color: var(--text-sub);
+    }
+
+    .meta-item a { color: var(--teal); }
+
+    /* Stats */
+    .profile-stats {
+      display: flex; gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .stat:hover { transform: translateY(-2px); }
+
+    .stat-number {
+      font-size: 22px; font-weight: 800;
+      color: var(--text); display: block;
+    }
+
+    .stat-label { font-size: 12px; color: var(--text-sub); }
+
+    /* Buttons */
+    .profile-actions { display: flex; gap: 10px; }
+
+    .edit-profile-btn {
+      flex: 1; padding: 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .edit-profile-btn:hover {
+      background: var(--elevated);
+      border-color: var(--violet);
+    }
+
+    .share-btn {
+      padding: 11px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .share-btn:hover { background: var(--elevated); }
+
+    /* ===== TABS ===== */
+    .profile-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 60px;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      flex: 1; padding: 14px;
+      background: none; border: none;
+      color: var(--text-sub);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--violet);
+      border-bottom-color: var(--violet);
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    /* ===== POSTS GRID ===== */
+    .tab-content { display: none; padding: 16px; }
+    .tab-content.active { display: block; }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .grid-post {
+      aspect-ratio: 1;
+      background: var(--card);
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .grid-post img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .grid-post:hover img { transform: scale(1.05); }
+
+    .grid-post-text {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px;
+      font-size: 13px; color: var(--text);
+      text-align: center;
+      background: linear-gradient(135deg, var(--card), var(--elevated));
+    }
+
+    .grid-post .hover-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      backdrop-filter: blur(2px);
+    }
+
+    .grid-post:hover .hover-overlay { display: flex; }
+
+    .overlay-stats {
+      display: flex; gap: 16px;
+      color: #fff; font-size: 14px; font-weight: 600;
+    }
+
+    .overlay-delete {
+      background: rgba(255,82,82,0.9);
+      color: #fff; border: none;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .overlay-delete:hover { background: var(--error); }
+
+    .empty-posts {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-sub);
+    }
+
+    .empty-posts .icon { font-size: 44px; margin-bottom: 12px; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: none; align-items: center; justify-content: center;
+      z-index: 300; padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%; max-width: 440px;
+      border: 1px solid var(--border);
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .modal-title {
+      font-size: 18px; font-weight: 700;
+      margin-bottom: 20px; color: var(--text);
+    }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+    .btn-cancel {
+      flex: 1; padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    .btn-save {
+      flex: 2; padding: 12px;
+      border-radius: 12px; border: none;
+      background: var(--violet); color: #fff;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-save:hover { background: var(--violet-dark); }
+
+    /* Copied toast */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--elevated);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px; font-weight: 600;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">ConnectX</div>
+    <div class="nav-actions">
+      <a href="feed.html"   style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🏠 Feed</a>
+      <a href="search.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔍 Search</a>
+      <button class="nav-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Cover Photo -->
+  <div class="cover-wrapper" id="coverWrapper">
+    <div id="coverGradient" style="width:100%;height:100%;background:linear-gradient(135deg,#6C63FF 0%,#00D4AA 50%,#FF6584 100%);"></div>
+    <button class="cover-edit-btn" onclick="document.getElementById('cover-input').click()">
+      📷 Edit Cover
+    </button>
+    <input type="file" id="cover-input" accept="image/*" style="display:none" onchange="uploadCover(event)"/>
+  </div>
+
+  <!-- Profile Info -->
+  <div class="profile-info">
+    <div class="avatar-wrapper">
+      <div id="avatarEl">
+        <div class="avatar-initial" id="avatarInitial">?</div>
+      </div>
+      <div class="avatar-edit-btn" onclick="document.getElementById('avatar-input').click()">✏️</div>
+      <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(event)"/>
+    </div>
+
+    <div class="profile-name"     id="profileName">Loading...</div>
+    <div class="profile-username" id="profileUsername">@...</div>
+    <div class="profile-bio"      id="profileBio"></div>
+
+    <div class="profile-meta" id="profileMeta"></div>
+
+    <div class="profile-stats">
+      <div class="stat">
+        <span class="stat-number" id="postCount">0</span>
+        <span class="stat-label">Posts</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="followerCount">0</span>
+        <span class="stat-label">Followers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="followingCount">0</span>
+        <span class="stat-label">Following</span>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button class="edit-profile-btn" onclick="openEditModal()">✏️ Edit Profile</button>
+      <button class="share-btn" onclick="shareProfile()">🔗 Share</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="profile-tabs">
+    <button class="tab-btn active" onclick="switchTab('posts')">📸 Posts</button>
+    <button class="tab-btn"        onclick="switchTab('liked')">❤️ Liked</button>
+  </div>
+
+  <!-- Posts Tab -->
+  <div class="tab-content active" id="tab-posts">
+    <div class="posts-grid" id="postsGrid">
+      <div class="loader">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Liked Tab -->
+  <div class="tab-content" id="tab-liked">
+    <div class="empty-posts">
+      <div class="icon">❤️</div>
+      <p>Liked posts coming soon!</p>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-title">✏️ Edit Profile</div>
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="edit-name" placeholder="Rijan Thapa"/>
+      </div>
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="edit-username" placeholder="rijanthapa"/>
+      </div>
+      <div class="input-group">
+        <label>Bio</label>
+        <input type="text" id="edit-bio" placeholder="Tell something about yourself..."/>
+      </div>
+      <div class="input-group">
+        <label>Location</label>
+        <input type="text" id="edit-location" placeholder="Nepalgunj, Nepal"/>
+      </div>
+      <div class="input-group">
+        <label>Website</label>
+        <input type="url" id="edit-website" placeholder="https://yoursite.com"/>
+      </div>
+      <div id="edit-msg" class="msg"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-save"   onclick="saveProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { supabase } from './supabase.js'
+
+    let currentUser = null
+
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { window.location.href = 'index.html'; return }
+      currentUser = session.user
+      await loadProfile()
+      await loadPosts()
+      await loadFollowCounts()
+    }
+
+    async function loadProfile() {
+      const { data } = await supabase
+        .from('profiles').select('*')
+        .eq('id', currentUser.id).single()
+      if (!data) return
+
+      const name = data.full_name || data.username || 'User'
+      document.getElementById('profileName').textContent     = name
+      document.getElementById('profileUsername').textContent = '@' + (data.username || '')
+      document.getElementById('profileBio').textContent      = data.bio || '✨ No bio yet — click Edit Profile!'
+
+      // Meta (location, website, joined)
+      let metaHtml = ''
+      if (data.location) metaHtml += `<div class="meta-item">📍 ${data.location}</div>`
+      if (data.website)  metaHtml += `<div class="meta-item">🔗 <a href="${data.website}" target="_blank">${data.website.replace('https://','')}</a></div>`
+      metaHtml += `<div class="meta-item">📅 Joined ${new Date(data.joined_at || data.created_at).toLocaleDateString('en-US',{month:'long',year:'numeric'})}</div>`
+      document.getElementById('profileMeta').innerHTML = metaHtml
+
+      // Avatar
+      const avatarEl = document.getElementById('avatarEl')
+      if (data.avatar_url) {
+        avatarEl.innerHTML = `<img class="profile-avatar-img" src="${data.avatar_url}" alt="avatar"/>`
+      } else {
+        avatarEl.innerHTML = `<div class="avatar-initial">${name[0].toUpperCase()}</div>`
+      }
+
+      // Cover
+      if (data.cover_url) {
+        const coverWrapper = document.getElementById('coverWrapper')
+        const gradientEl   = document.getElementById('coverGradient')
+        if (gradientEl) gradientEl.remove()
+        const img = document.createElement('img')
+        img.src = data.cover_url
+        img.className = 'cover-img'
+        coverWrapper.insertBefore(img, coverWrapper.firstChild)
+      }
+
+      // Pre-fill modal
+      document.getElementById('edit-name').value     = data.full_name || ''
+      document.getElementById('edit-username').value = data.username  || ''
+      document.getElementById('edit-bio').value      = data.bio       || ''
+      document.getElementById('edit-location').value = data.location  || ''
+      document.getElementById('edit-website').value  = data.website   || ''
+    }
+
+    async function loadFollowCounts() {
+      const [{ count: followers }, { count: following }] = await Promise.all([
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', currentUser.id),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id',  currentUser.id)
+      ])
+      document.getElementById('followerCount').textContent  = followers || 0
+      document.getElementById('followingCount').textContent = following || 0
+    }
+
+    async function loadPosts() {
+      const { data: posts } = await supabase
+        .from('posts').select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+
+      const grid = document.getElementById('postsGrid')
+      document.getElementById('postCount').textContent = posts?.length || 0
+
+      if (!posts || posts.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-posts">
+            <div class="icon">📷</div>
+            <p>No posts yet! Share your first moment.</p>
+          </div>`
+        return
+      }
+
+      grid.innerHTML = posts.map(post => {
+        const content = post.image_url
+          ? `<img src="${post.image_url}" alt="post"/>`
+          : `<div class="grid-post-text">${post.content?.substring(0,80) || ''}</div>`
+        return `
+          <div class="grid-post">
+            ${content}
+            <div class="hover-overlay">
+              <div class="overlay-stats">
+                <span>❤️ ${post.likes_count || 0}</span>
+              </div>
+              <button class="overlay-delete" onclick="deletePost('${post.id}')">🗑️ Delete</button>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    window.deletePost = async function (postId) {
+      if (!confirm('Delete this post?')) return
+      const { error } = await supabase.from('posts').delete().eq('id', postId)
+      if (!error) { showToast('🗑️ Post deleted!'); await loadPosts() }
+    }
+
+    // Upload Avatar
+    window.uploadAvatar = async function (event) {
+      const file = event.target.files[0]
+      if (!file) return
+      showToast('⏳ Uploading avatar...')
+      const fileName = `avatar_${currentUser.id}_${Date.now()}`
+      const { error } = await supabase.storage
+        .from('avatars').upload(fileName, file, { upsert: true })
+      if (error) { showToast('❌ Upload failed'); return }
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName)
+      await supabase.from('profiles').update({ avatar_url: urlData.publicUrl }).eq('id', currentUser.id)
+      showToast('✅ Avatar updated!')
+      await loadProfile()
+    }
+
+    // Upload Cover
+    window.uploadCover = async function (event) {
+      const file = event.target.files[0]
+      if (!file) return
+      showToast('⏳ Uploading cover...')
+      const fileName = `cover_${currentUser.id}_${Date.now()}`
+      const { error } = await supabase.storage
+        .from('avatars').upload(fileName, file, { upsert: true })
+      if (error) { showToast('❌ Upload failed'); return }
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName)
+      await supabase.from('profiles').update({ cover_url: urlData.publicUrl }).eq('id', currentUser.id)
+      showToast('✅ Cover updated!')
+      await loadProfile()
+    }
+
+    // Tabs
+    window.switchTab = function (tab) {
+      document.querySelectorAll('.tab-btn').forEach((b,i) => {
+        b.classList.toggle('active', (i === 0 && tab === 'posts') || (i === 1 && tab === 'liked'))
+      })
+      document.getElementById('tab-posts').classList.toggle('active', tab === 'posts')
+      document.getElementById('tab-liked').classList.toggle('active', tab === 'liked')
+    }
+
+    // Share Profile
+    window.shareProfile = function () {
+      const url = window.location.href
+      navigator.clipboard.writeText(url).then(() => showToast('🔗 Profile link copied!'))
+    }
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast')
+      t.textContent = msg
+      t.classList.add('show')
+      setTimeout(() => t.classList.remove('show'), 2500)
+    }
+
+    window.openEditModal  = () => document.getElementById('editModal').classList.add('open')
+    window.closeEditModal = () => document.getElementById('editModal').classList.remove('open')
+
+    window.saveProfile = async function () {
+      const name     = document.getElementById('edit-name').value.trim()
+      const username = document.getElementById('edit-username').value.trim().toLowerCase()
+      const bio      = document.getElementById('edit-bio').value.trim()
+      const location = document.getElementById('edit-location').value.trim()
+      const website  = document.getElementById('edit-website').value.trim()
+      const msgEl    = document.getElementById('edit-msg')
+      msgEl.className = 'msg'
+
+      if (!username) {
+        msgEl.className = 'msg error'
+        msgEl.textContent = 'Username cannot be empty!'
+        return
+      }
+
+      const { error } = await supabase.from('profiles')
+        .update({ full_name: name, username, bio, location, website })
+        .eq('id', currentUser.id)
+
+      if (error) {
+        msgEl.className = 'msg error'
+        msgEl.textContent = error.message
+        return
+      }
+
+      msgEl.className = 'msg success'
+      msgEl.textContent = '✅ Profile updated!'
+      setTimeout(() => { closeEditModal(); loadProfile() }, 1000)
+    }
+
+    window.logout = async function () {
+      await supabase.auth.signOut()
+      window.location.href = 'index.html'
+    }
+
+    init()
+  </script>
+
+</body>
+</html>

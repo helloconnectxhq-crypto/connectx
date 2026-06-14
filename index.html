@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ConnectX – Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="logo">ConnectX</div>
+      <div class="tagline">Connect Beyond Limits</div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn btn-primary" onclick="login()">Log In</button>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="switch-text">
+        Don't have an account? <a href="signup.html">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabase.js'
+    window.login = async function () {
+      const email    = document.getElementById('email').value.trim()
+      const password = document.getElementById('password').value
+      const msg      = document.getElementById('msg')
+      msg.className  = 'msg'
+      msg.textContent = ''
+
+      if (!email || !password) {
+        msg.className = 'msg error'
+        msg.textContent = 'Please fill in all fields.'
+        return
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        msg.className = 'msg error'
+        msg.textContent = error.message
+      } else {
+        window.location.href = 'feed.html'
+      }
+    }
+  </script>
+
+</body>
+</html>
