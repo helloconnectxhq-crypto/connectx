@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ConnectX – Search</title>
   <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#6C63FF"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="stylesheet" href="style.css"/>
   <style>
     .search-page {
@@ -17,7 +17,6 @@
       padding-right: 16px;
     }
 
-    /* Search Bar */
     .search-bar-wrapper {
       position: relative;
       margin-bottom: 24px;
@@ -25,11 +24,9 @@
 
     .search-icon {
       position: absolute;
-      left: 16px;
-      top: 50%;
+      left: 16px; top: 50%;
       transform: translateY(-50%);
-      font-size: 18px;
-      color: var(--text-sub);
+      font-size: 18px; color: var(--text-sub);
     }
 
     .search-bar {
@@ -39,8 +36,7 @@
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
-      font-size: 15px;
-      outline: none;
+      font-size: 15px; outline: none;
       transition: border 0.2s, box-shadow 0.2s;
     }
 
@@ -49,27 +45,23 @@
       box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
     }
 
-    /* Section Title */
     .section-title {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 11px; font-weight: 700;
       color: var(--text-sub);
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 14px;
     }
 
-    /* User Card */
     .user-card {
       background: var(--surface);
       border-radius: 16px;
       padding: 14px 16px;
       margin-bottom: 10px;
       border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      display: flex; align-items: center; gap: 14px;
       transition: border-color 0.2s, transform 0.1s;
+      cursor: pointer;
     }
 
     .user-card:hover {
@@ -78,131 +70,247 @@
     }
 
     .user-avatar {
-      width: 50px;
-      height: 50px;
+      width: 50px; height: 50px;
       border-radius: 50%;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #fff;
+      flex-shrink: 0; overflow: hidden;
     }
 
-    .user-avatar img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    .user-info { flex: 1; }
+    .user-name     { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .user-username { font-size: 13px; color: var(--text-sub); }
+    .user-bio      { font-size: 12px; color: var(--text-sub); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+    .follow-btn {
+      padding: 8px 18px;
+      border-radius: 10px; border: none;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+    }
+
+    .follow-btn.follow   { background: var(--violet); color: #fff; }
+    .follow-btn.follow:hover { background: var(--violet-dark); }
+    .follow-btn.following {
+      background: transparent; color: var(--text-sub);
+      border: 1px solid var(--border);
+    }
+    .follow-btn.following:hover { background: rgba(255,82,82,0.1); color: var(--error); border-color: var(--error); }
+
+    .search-empty {
+      text-align: center; padding: 50px 20px; color: var(--text-sub);
+    }
+    .search-empty .icon { font-size: 44px; margin-bottom: 12px; }
+    .search-empty p { font-size: 14px; }
+
+    /* User Profile Modal */
+    .profile-modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 300;
+      display: none; align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .profile-modal.open { display: flex; }
+
+    .profile-sheet {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      width: 100%; max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+
+    .sheet-cover {
+      width: 100%; height: 140px;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA, #FF6584);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sheet-cover img {
+      width: 100%; height: 100%;
       object-fit: cover;
     }
 
-    .user-info { flex: 1; }
-
-    .user-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 2px;
+    .sheet-profile-info {
+      padding: 0 20px 20px;
     }
 
-    .user-username {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .user-bio {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-top: 4px;
-      white-space: nowrap;
+    .sheet-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      border: 3px solid var(--surface);
+      margin-top: -36px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #fff;
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 200px;
     }
 
-    /* Follow Button */
-    .follow-btn {
-      padding: 8px 18px;
-      border-radius: 10px;
-      border: none;
-      font-size: 13px;
-      font-weight: 700;
+    .sheet-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .sheet-name     { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+    .sheet-username { font-size: 14px; color: var(--text-sub); margin-bottom: 8px; }
+    .sheet-bio      { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+
+    .sheet-stats {
+      display: flex; gap: 24px; margin-bottom: 16px;
+    }
+
+    .sheet-stat { text-align: center; }
+    .sheet-stat-num   { font-size: 18px; font-weight: 800; color: var(--text); display: block; }
+    .sheet-stat-label { font-size: 12px; color: var(--text-sub); }
+
+    .sheet-actions { display: flex; gap: 10px; margin-bottom: 20px; }
+
+    .sheet-follow-btn {
+      flex: 1; padding: 11px;
+      border-radius: 12px; border: none;
+      background: var(--violet); color: #fff;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sheet-follow-btn.following {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+    }
+
+    .sheet-msg-btn {
+      flex: 1; padding: 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text);
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sheet-msg-btn:hover { background: var(--elevated); }
+
+    /* Posts grid in sheet */
+    .sheet-posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .sheet-post {
+      aspect-ratio: 1;
+      background: var(--card);
+      overflow: hidden;
       cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
+      position: relative;
     }
 
-    .follow-btn.follow {
-      background: var(--violet);
-      color: #fff;
+    .sheet-post img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s;
     }
 
-    .follow-btn.follow:hover { background: var(--violet-dark); }
+    .sheet-post:hover img { transform: scale(1.05); }
 
-    .follow-btn.following {
-      background: transparent;
-      color: var(--text-sub);
-      border: 1px solid var(--border);
-    }
-
-    .follow-btn.following:hover {
-      background: rgba(255,82,82,0.1);
-      color: var(--error);
-      border-color: var(--error);
-    }
-
-    .follow-btn.me {
-      background: transparent;
-      color: var(--text-sub);
-      border: 1px solid var(--border);
-      cursor: default;
-    }
-
-    /* Empty / Loading */
-    .search-empty {
+    .sheet-post-text {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 8px; font-size: 11px; color: var(--text);
       text-align: center;
-      padding: 50px 20px;
-      color: var(--text-sub);
+      background: linear-gradient(135deg, var(--card), var(--elevated));
     }
 
-    .search-empty .icon { font-size: 44px; margin-bottom: 12px; }
-    .search-empty p { font-size: 14px; }
+    .close-sheet-btn {
+      position: absolute;
+      top: 12px; right: 16px;
+      background: rgba(0,0,0,0.4);
+      border: none; color: #fff;
+      width: 30px; height: 30px;
+      border-radius: 50%; font-size: 16px;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-logo">ConnectX</div>
     <div class="nav-actions">
-      <a href="feed.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🏠 Feed</a>
+      <a href="feed.html"    style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🏠 Feed</a>
       <a href="profile.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">👤 Profile</a>
       <button class="nav-btn" onclick="logout()">Logout</button>
     </div>
   </nav>
 
   <div class="search-page">
-
-    <!-- Search Bar -->
     <div class="search-bar-wrapper">
       <span class="search-icon">🔍</span>
-      <input
-        class="search-bar"
-        id="searchInput"
-        type="text"
+      <input class="search-bar" id="searchInput" type="text"
         placeholder="Search users by username..."
-        oninput="handleSearch()"
-      />
+        oninput="handleSearch()"/>
     </div>
-
-    <!-- Results -->
     <div class="section-title" id="resultsTitle">👥 All Users</div>
-    <div id="usersList">
-      <div class="loader">Loading users...</div>
-    </div>
+    <div id="usersList"><div class="loader">Loading users...</div></div>
+  </div>
 
+  <!-- User Profile Modal -->
+  <div class="profile-modal" id="profileModal" onclick="handleModalClick(event)">
+    <div class="profile-sheet" id="profileSheet">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-cover" id="sheetCover">
+        <button class="close-sheet-btn" onclick="closeProfileModal()">✕</button>
+      </div>
+
+      <div class="sheet-profile-info">
+        <div class="sheet-avatar" id="sheetAvatar">?</div>
+        <div class="sheet-name"     id="sheetName"></div>
+        <div class="sheet-username" id="sheetUsername"></div>
+        <div class="sheet-bio"      id="sheetBio"></div>
+
+        <div class="sheet-stats">
+          <div class="sheet-stat">
+            <span class="sheet-stat-num"   id="sheetPosts">0</span>
+            <span class="sheet-stat-label">Posts</span>
+          </div>
+          <div class="sheet-stat">
+            <span class="sheet-stat-num"   id="sheetFollowers">0</span>
+            <span class="sheet-stat-label">Followers</span>
+          </div>
+          <div class="sheet-stat">
+            <span class="sheet-stat-num"   id="sheetFollowing">0</span>
+            <span class="sheet-stat-label">Following</span>
+          </div>
+        </div>
+
+        <div class="sheet-actions">
+          <button class="sheet-follow-btn" id="sheetFollowBtn" onclick="toggleSheetFollow()">Follow</button>
+          <button class="sheet-msg-btn"    onclick="messageUser()">💬 Message</button>
+        </div>
+
+        <div class="sheet-posts-grid" id="sheetPostsGrid"></div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -211,88 +319,63 @@
     let currentUser  = null
     let allUsers     = []
     let followingIds = new Set()
+    let activeSheetUserId = null
 
-    // ---- Init ----
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { window.location.href = 'index.html'; return }
       currentUser = session.user
-
       await loadFollowing()
       await loadAllUsers()
     }
 
-    // ---- Load who I follow ----
     async function loadFollowing() {
       const { data } = await supabase
-        .from('follows')
-        .select('following_id')
+        .from('follows').select('following_id')
         .eq('follower_id', currentUser.id)
-
       followingIds = new Set((data || []).map(f => f.following_id))
     }
 
-    // ---- Load All Users ----
     async function loadAllUsers() {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('id, username, full_name, bio, avatar_url')
         .order('created_at', { ascending: false })
-
-      if (error) {
-        document.getElementById('usersList').innerHTML =
-          '<div class="loader">Error loading users.</div>'
-        return
-      }
 
       allUsers = data || []
       renderUsers(allUsers)
     }
 
-    // ---- Handle Search ----
     window.handleSearch = function () {
-      const query = document.getElementById('searchInput').value.trim().toLowerCase()
+      const query   = document.getElementById('searchInput').value.trim().toLowerCase()
       const titleEl = document.getElementById('resultsTitle')
-
-      if (!query) {
-        titleEl.textContent = '👥 All Users'
-        renderUsers(allUsers)
-        return
-      }
-
+      if (!query) { titleEl.textContent = '👥 All Users'; renderUsers(allUsers); return }
       const filtered = allUsers.filter(u =>
         u.username?.toLowerCase().includes(query) ||
         u.full_name?.toLowerCase().includes(query)
       )
-
       titleEl.textContent = `🔍 Results for "${query}"`
       renderUsers(filtered)
     }
 
-    // ---- Render Users ----
     function renderUsers(users) {
       const listEl = document.getElementById('usersList')
-
       const others = users.filter(u => u.id !== currentUser.id)
 
       if (others.length === 0) {
-        listEl.innerHTML = `
-          <div class="search-empty">
-            <div class="icon">🔍</div>
-            <p>No users found</p>
-          </div>`
+        listEl.innerHTML = `<div class="search-empty"><div class="icon">🔍</div><p>No users found</p></div>`
         return
       }
 
       listEl.innerHTML = others.map(user => {
-        const initial   = (user.username || 'U')[0].toUpperCase()
+        const initial     = (user.username || 'U')[0].toUpperCase()
         const isFollowing = followingIds.has(user.id)
-        const avatarHtml = user.avatar_url
+        const avatarHtml  = user.avatar_url
           ? `<img src="${user.avatar_url}" alt="avatar"/>`
           : initial
 
         return `
-          <div class="user-card" id="ucard-${user.id}">
+          <div class="user-card" onclick="openUserProfile('${user.id}')">
             <div class="user-avatar">${avatarHtml}</div>
             <div class="user-info">
               <div class="user-name">${user.full_name || user.username}</div>
@@ -302,7 +385,7 @@
             <button
               class="follow-btn ${isFollowing ? 'following' : 'follow'}"
               id="fbtn-${user.id}"
-              onclick="toggleFollow('${user.id}')"
+              onclick="event.stopPropagation(); toggleFollow('${user.id}')"
             >
               ${isFollowing ? 'Following' : 'Follow'}
             </button>
@@ -310,30 +393,138 @@
       }).join('')
     }
 
-    // ---- Toggle Follow ----
     window.toggleFollow = async function (userId) {
-      const btn        = document.getElementById(`fbtn-${userId}`)
+      const btn         = document.getElementById(`fbtn-${userId}`)
       const isFollowing = followingIds.has(userId)
 
-      // Optimistic UI
       if (isFollowing) {
         followingIds.delete(userId)
         btn.textContent = 'Follow'
         btn.className   = 'follow-btn follow'
-
-        await supabase.from('follows')
-          .delete()
-          .eq('follower_id', currentUser.id)
-          .eq('following_id', userId)
+        await supabase.from('follows').delete()
+          .eq('follower_id', currentUser.id).eq('following_id', userId)
       } else {
         followingIds.add(userId)
         btn.textContent = 'Following'
         btn.className   = 'follow-btn following'
-
         await supabase.from('follows').insert({
-          follower_id:  currentUser.id,
-          following_id: userId
+          follower_id: currentUser.id, following_id: userId
         })
+      }
+    }
+
+    // ===== USER PROFILE SHEET =====
+    window.openUserProfile = async function (userId) {
+      activeSheetUserId = userId
+      document.getElementById('profileModal').classList.add('open')
+
+      // Load profile
+      const { data: profile } = await supabase
+        .from('profiles').select('*')
+        .eq('id', userId).single()
+
+      if (!profile) return
+
+      const name    = profile.full_name || profile.username || 'User'
+      const initial = name[0].toUpperCase()
+
+      // Avatar
+      const avatarEl = document.getElementById('sheetAvatar')
+      if (profile.avatar_url) {
+        avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${name}"/>`
+      } else {
+        avatarEl.textContent = initial
+      }
+
+      // Cover
+      const coverEl = document.getElementById('sheetCover')
+      if (profile.cover_url) {
+        coverEl.style.backgroundImage = `url(${profile.cover_url})`
+        coverEl.style.backgroundSize  = 'cover'
+      }
+
+      document.getElementById('sheetName').textContent     = name
+      document.getElementById('sheetUsername').textContent = '@' + (profile.username || '')
+      document.getElementById('sheetBio').textContent      = profile.bio || ''
+
+      // Follow button
+      const isFollowing = followingIds.has(userId)
+      const followBtn   = document.getElementById('sheetFollowBtn')
+      followBtn.textContent = isFollowing ? 'Following' : 'Follow'
+      followBtn.className   = `sheet-follow-btn ${isFollowing ? 'following' : ''}`
+
+      // Stats
+      const [{ count: postsCount }, { count: followersCount }, { count: followingCount }] = await Promise.all([
+        supabase.from('posts').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', userId),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', userId)
+      ])
+
+      document.getElementById('sheetPosts').textContent     = postsCount    || 0
+      document.getElementById('sheetFollowers').textContent = followersCount || 0
+      document.getElementById('sheetFollowing').textContent = followingCount || 0
+
+      // Posts grid
+      const { data: posts } = await supabase
+        .from('posts').select('*').eq('user_id', userId)
+        .order('created_at', { ascending: false }).limit(9)
+
+      const grid = document.getElementById('sheetPostsGrid')
+      if (!posts || posts.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-sub);font-size:13px;">No posts yet</div>`
+      } else {
+        grid.innerHTML = posts.map(post => {
+          if (post.image_url) {
+            return `<div class="sheet-post"><img src="${post.image_url}" alt="post"/></div>`
+          }
+          return `<div class="sheet-post"><div class="sheet-post-text">${post.content?.substring(0,40) || ''}</div></div>`
+        }).join('')
+      }
+    }
+
+    window.closeProfileModal = function () {
+      document.getElementById('profileModal').classList.remove('open')
+      activeSheetUserId = null
+    }
+
+    window.handleModalClick = function (e) {
+      if (e.target === document.getElementById('profileModal')) closeProfileModal()
+    }
+
+    window.toggleSheetFollow = async function () {
+      if (!activeSheetUserId) return
+      const isFollowing = followingIds.has(activeSheetUserId)
+      const followBtn   = document.getElementById('sheetFollowBtn')
+      const listBtn     = document.getElementById(`fbtn-${activeSheetUserId}`)
+
+      if (isFollowing) {
+        followingIds.delete(activeSheetUserId)
+        followBtn.textContent = 'Follow'
+        followBtn.className   = 'sheet-follow-btn'
+        if (listBtn) { listBtn.textContent = 'Follow'; listBtn.className = 'follow-btn follow' }
+        await supabase.from('follows').delete()
+          .eq('follower_id', currentUser.id).eq('following_id', activeSheetUserId)
+      } else {
+        followingIds.add(activeSheetUserId)
+        followBtn.textContent = 'Following'
+        followBtn.className   = 'sheet-follow-btn following'
+        if (listBtn) { listBtn.textContent = 'Following'; listBtn.className = 'follow-btn following' }
+        await supabase.from('follows').insert({
+          follower_id: currentUser.id, following_id: activeSheetUserId
+        })
+      }
+    }
+
+    window.messageUser = function () {
+      if (!activeSheetUserId) return
+      // Get username and go to messages
+      const user = allUsers.find(u => u.id === activeSheetUserId)
+      if (user) {
+        sessionStorage.setItem('openChatUserId',   activeSheetUserId)
+        sessionStorage.setItem('openChatUsername', user.username)
+        sessionStorage.setItem('openChatName',     user.full_name || user.username)
+        sessionStorage.setItem('openChatAvatar',   user.avatar_url || '')
+        window.location.href = 'messages.html'
       }
     }
 

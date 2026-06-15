@@ -789,7 +789,7 @@
 
       const { data: comments } = await supabase
         .from('comments').select('*, profiles(username)')
-        .eq('post_id', reelId).order('created_at', { ascending: true })
+        .eq('reel_id', reelId).order('created_at', { ascending: true })
 
       if (!comments || comments.length === 0) {
         listEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">No comments yet 👇</div>'
@@ -817,7 +817,7 @@
       input.value = ''
 
       await supabase.from('comments').insert({
-        post_id:  activeCommentReelId,
+        reel_id:  activeCommentReelId,
         user_id:  currentUser.id,
         content
       })

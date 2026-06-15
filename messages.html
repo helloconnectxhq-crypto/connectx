@@ -674,6 +674,19 @@
       currentProfile = data
 
       loadConversations()
+
+      // Auto open chat from search page
+      const chatUserId   = sessionStorage.getItem('openChatUserId')
+      const chatUsername = sessionStorage.getItem('openChatUsername')
+      const chatName     = sessionStorage.getItem('openChatName')
+      const chatAvatar   = sessionStorage.getItem('openChatAvatar')
+      if (chatUserId) {
+        sessionStorage.removeItem('openChatUserId')
+        sessionStorage.removeItem('openChatUsername')
+        sessionStorage.removeItem('openChatName')
+        sessionStorage.removeItem('openChatAvatar')
+        openChat(chatUserId, chatUsername, chatName, chatAvatar)
+      }
     }
 
     // ===== CONVERSATIONS =====
