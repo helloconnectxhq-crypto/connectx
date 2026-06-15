@@ -925,8 +925,12 @@
       loadReels()
     }
 
-    window.visitProfile = function () {
-      window.location.href = 'profile.html'
+    window.visitProfile = function (userId) {
+      if (userId === currentUser.id) {
+        window.location.href = 'profile.html'
+      } else {
+        window.location.href = `search.html?user=${userId}`
+      }
     }
 
     function showToast(msg) {

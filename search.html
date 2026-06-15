@@ -327,6 +327,11 @@
       currentUser = session.user
       await loadFollowing()
       await loadAllUsers()
+
+      // Auto open profile from reels
+      const urlParams = new URLSearchParams(window.location.search)
+      const userId    = urlParams.get('user')
+      if (userId) openUserProfile(userId)
     }
 
     async function loadFollowing() {
