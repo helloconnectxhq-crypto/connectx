@@ -200,6 +200,42 @@
     .chat-header-name   { font-size: 15px; font-weight: 700; color: var(--text); }
     .chat-header-status { font-size: 12px; color: var(--success); }
 
+    .call-buttons { display: flex; gap: 8px; }
+
+    .call-btn {
+      background: none; border: none;
+      color: var(--text-sub); font-size: 22px;
+      cursor: pointer; padding: 6px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .call-btn:hover { color: var(--violet); background: rgba(108,99,255,0.1); }
+
+    /* Call Modal */
+    .call-modal {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 1000;
+      display: none; flex-direction: column;
+    }
+
+    .call-modal.open { display: flex; }
+
+    .call-frame {
+      flex: 1; width: 100%; border: none;
+    }
+
+    .call-close-btn {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: rgba(255,82,82,0.9);
+      border: none; color: #fff;
+      padding: 10px 18px; border-radius: 10px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; z-index: 10;
+    }
+
     /* Messages */
     .messages-container {
       flex: 1;
@@ -596,6 +632,10 @@
           <div class="chat-header-name"   id="chatHeaderName"></div>
           <div class="chat-header-status" id="chatHeaderStatus">● Online</div>
         </div>
+        <div class="call-buttons">
+          <button class="call-btn" onclick="startCall('audio')" title="Audio Call">📞</button>
+          <button class="call-btn" onclick="startCall('video')" title="Video Call">📹</button>
+        </div>
       </div>
 
       <!-- Messages -->
@@ -643,6 +683,12 @@
       </div>
       <button onclick="closeNewChat()" style="width:100%;margin-top:14px;padding:11px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text-sub);font-weight:600;cursor:pointer;">Cancel</button>
     </div>
+  </div>
+
+  <!-- Call Modal -->
+  <div class="call-modal" id="callModal">
+    <button class="call-close-btn" onclick="endCall()">📵 End Call</button>
+    <iframe class="call-frame" id="callFrame" allow="camera; microphone; fullscreen; display-capture"></iframe>
   </div>
 
   <!-- Toast -->
@@ -1129,6 +1175,33 @@
         picker.classList.remove('open')
       }
     })
+
+    // ===== VIDEO/AUDIO CALL =====
+    window.startCall = function (type) {
+      if (!activeChat) { showToast('Select a conversation first!'); return }
+      const roomName = `connectx-${[currentUser.id, activeChat.id].sort().join('-')}`
+      const baseUrl  = `https://meet.jit.si/${roomName}`
+      const url      = type === 'audio'
+        ? `${baseUrl}#config.startWithVideoMuted=true`
+        : baseUrl
+
+      document.getElementById('callFrame').src = url
+      document.getElementById('callModal').classList.add('open')
+      showToast(type === 'audio' ? '📞 Audio call started!' : '📹 Video call started!')
+
+      // Notify other user
+      supabase.from('notifications').insert({
+        user_id:  activeChat.id,
+        actor_id: currentUser.id,
+        type:     type === 'audio' ? 'audio_call' : 'video_call'
+      }).catch(() => {})
+    }
+
+    window.endCall = function () {
+      document.getElementById('callModal').classList.remove('open')
+      document.getElementById('callFrame').src = ''
+      showToast('📵 Call ended')
+    }
 
     window.logout = async function () {
       await supabase.auth.signOut()
