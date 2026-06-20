@@ -110,6 +110,10 @@
     }
     .call-btn:hover { color: var(--violet); background: rgba(108,99,255,0.1); }
 
+<<<<<<< HEAD
+=======
+    /* Call Modal */
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
     .call-modal {
       position: fixed; inset: 0; background: #000;
       z-index: 1000; display: none; flex-direction: column;
@@ -354,7 +358,11 @@
 
     let currentUser     = null
     let currentProfile  = null
+<<<<<<< HEAD
     let activeChat       = null
+=======
+    let activeChat      = null
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
     let conversations   = []
     let mediaRecorder   = null
     let audioChunks     = []
@@ -386,6 +394,10 @@
       }
     }
 
+<<<<<<< HEAD
+=======
+    // ===== INCOMING CALL =====
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
     function listenForCalls() {
       supabase.channel('incoming-calls')
         .on('postgres_changes', {
@@ -446,6 +458,7 @@
           parentNode: document.getElementById('jitsiContainer'),
           userInfo: { displayName: currentProfile?.username || 'User' },
           configOverwrite: {
+<<<<<<< HEAD
             prejoinPageEnabled:     false,
             prejoinConfig: { enabled: false },
             startWithVideoMuted:    type === 'audio_call',
@@ -458,16 +471,40 @@
             hideConferenceSubject:  true,
             disableProfile:         true,
             requireDisplayName:     false,
+=======
+            prejoinPageEnabled:        false,
+            disableProfile:            true,
+            prejoinConfig:              { enabled: false },
+            startWithVideoMuted:       type === 'audio_call',
+            startWithAudioMuted:       false,
+            disableDeepLinking:        true,
+            enableWelcomePage:         false,
+            enableClosePage:           false,
+            disableInviteFunctions:    true,
+            doNotStoreRoom:            true,
+            hideConferenceSubject:     true,
+            hideConferenceTimer:       false,
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
             toolbarButtons: ['microphone','camera','hangup','chat','tileview','fullscreen'],
           },
           interfaceConfigOverwrite: {
             SHOW_JITSI_WATERMARK:        false,
             SHOW_WATERMARK_FOR_GUESTS:   false,
             SHOW_POWERED_BY:             false,
+<<<<<<< HEAD
             SHOW_PROMOTIONAL_CLOSE_PAGE: false,
             DEFAULT_BACKGROUND:          '#0D0D0D',
             MOBILE_APP_PROMO:            false,
             HIDE_INVITE_MORE_HEADER:     true,
+=======
+            SHOW_BRAND_WATERMARK:        false,
+            SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+            DEFAULT_BACKGROUND:          '#0D0D0D',
+            DISABLE_VIDEO_BACKGROUND:    false,
+            MOBILE_APP_PROMO:            false,
+            HIDE_INVITE_MORE_HEADER:     true,
+            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
             TOOLBAR_ALWAYS_VISIBLE:      true,
           }
         })
@@ -504,6 +541,10 @@
       showToast('📵 Call ended')
     }
 
+<<<<<<< HEAD
+=======
+    // ===== CONVERSATIONS =====
+>>>>>>> fd2b3bc67655a5ff2dc95cec4907d4a41e531be6
     async function loadConversations() {
       const { data: msgs } = await supabase
         .from('messages')
