@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>ConnectX – Feed</title>
   <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#6C63FF"/>
@@ -17,6 +17,10 @@
       scrollbar-width: none;
       display: flex;
       gap: 14px;
+      min-height: 100px;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
     }
     .stories-bar::-webkit-scrollbar { display: none; }
 
@@ -27,28 +31,36 @@
       gap: 6px;
       cursor: pointer;
       flex-shrink: 0;
+      min-width: 64px;
     }
 
     .story-ring {
-      width: 64px; height: 64px;
+      width: 64px; 
+      height: 64px;
       border-radius: 50%;
       padding: 3px;
       background: linear-gradient(135deg, #6C63FF, #00D4AA, #FF6584);
       position: relative;
       transition: transform 0.2s;
+      flex-shrink: 0;
     }
 
     .story-ring:hover { transform: scale(1.08); }
     .story-ring.seen  { background: var(--border); }
 
     .story-ring-inner {
-      width: 100%; height: 100%;
+      width: 100%; 
+      height: 100%;
       border-radius: 50%;
       overflow: hidden;
       border: 3px solid var(--surface);
       background: var(--card);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800; color: #fff;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 22px; 
+      font-weight: 800; 
+      color: #fff;
     }
 
     .story-ring-inner img { width: 100%; height: 100%; object-fit: cover; }
@@ -65,9 +77,13 @@
     }
 
     .story-username {
-      font-size: 11px; color: var(--text-sub);
-      max-width: 64px; text-align: center;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-size: 11px; 
+      color: var(--text-sub);
+      max-width: 64px; 
+      text-align: center;
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      white-space: nowrap;
     }
 
     .story-viewer {
@@ -331,6 +347,103 @@
       z-index: 9999;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ===== MOBILE FIXES ===== */
+    @media screen and (max-width: 768px) {
+      .stories-bar {
+        padding: 12px 12px;
+        gap: 10px;
+        min-height: 90px;
+        align-items: center;
+      }
+      
+      .story-ring {
+        width: 56px;
+        height: 56px;
+      }
+      
+      .story-username {
+        font-size: 10px;
+        max-width: 56px;
+      }
+      
+      .story-item {
+        min-width: 56px;
+      }
+      
+      .feed-page {
+        padding-top: 70px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      
+      .post-card {
+        padding: 12px;
+        border-radius: 12px;
+      }
+      
+      .create-post {
+        padding: 12px;
+        border-radius: 12px;
+      }
+      
+      .create-post textarea {
+        min-height: 60px;
+        font-size: 13px;
+        padding: 10px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .stories-bar {
+        padding: 10px 10px;
+        gap: 8px;
+        min-height: 80px;
+      }
+      
+      .story-ring {
+        width: 48px;
+        height: 48px;
+      }
+      
+      .story-ring-inner {
+        font-size: 16px;
+      }
+      
+      .story-username {
+        font-size: 9px;
+        max-width: 48px;
+      }
+      
+      .story-item {
+        min-width: 48px;
+      }
+      
+      .feed-page {
+        padding-top: 65px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      
+      .post-header .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+      }
+      
+      .post-username {
+        font-size: 13px;
+      }
+      
+      .post-text {
+        font-size: 13px;
+      }
+      
+      .action-btn {
+        font-size: 12px;
+        padding: 5px 8px;
+      }
+    }
   </style>
 </head>
 <body>
