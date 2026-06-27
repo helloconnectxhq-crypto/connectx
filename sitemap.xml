@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://connectx-psi.vercel.app/</loc>
     <lastmod>2026-06-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://connectx-psi.vercel.app/icon-512.png</image:loc>
-      <image:title>ConnectX - Connect Beyond Limits</image:title>
-    </image:image>
   </url>
   <url>
     <loc>https://connectx-psi.vercel.app/feed.html</loc>
@@ -28,12 +23,6 @@
     <lastmod>2026-06-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://connectx-psi.vercel.app/messages.html</loc>
-    <lastmod>2026-06-27</lastmod>
-    <changefreq>always</changefreq>
-    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://connectx-psi.vercel.app/live.html</loc>
