@@ -3,44 +3,49 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ConnectX – Sign Up</title>
+  <title>Sign Up – ConnectX | Free Social Media App</title>
+  <meta name="description" content="Create your free ConnectX account. Join millions of users for real-time messaging, video calls, live streaming, reels and stories."/>
+  <meta name="keywords" content="ConnectX signup, create account, free social media, join ConnectX, social network Nepal"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://connectx-psi.vercel.app/signup.html"/>
+  <meta property="og:title" content="Sign Up – ConnectX | Free Social Media App"/>
+  <meta property="og:description" content="Create your free ConnectX account. Real-time messaging, video calls, live streaming and more!"/>
+  <meta property="og:image" content="https://connectx-psi.vercel.app/icon-512.png"/>
+  <meta property="og:url" content="https://connectx-psi.vercel.app/signup.html"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Sign Up – ConnectX"/>
+  <meta name="twitter:image" content="https://connectx-psi.vercel.app/icon-512.png"/>
   <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#6C63FF"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="icon" type="image/png" href="icon-192.png"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-
   <div class="auth-page">
     <div class="auth-card">
       <div class="logo">ConnectX</div>
       <div class="tagline">Join the community</div>
-
       <div class="input-group">
         <label>Username</label>
-        <input type="text" id="username" placeholder="rijanthapa" />
+        <input type="text" id="username" placeholder="rijanthapa" autocomplete="username"/>
       </div>
-
       <div class="input-group">
         <label>Email</label>
-        <input type="email" id="email" placeholder="you@example.com" />
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
       </div>
-
       <div class="input-group">
         <label>Password</label>
-        <input type="password" id="password" placeholder="Min 6 characters" />
+        <input type="password" id="password" placeholder="Min 6 characters" autocomplete="new-password"/>
       </div>
-
       <button class="btn btn-primary" onclick="signup()">Create Account</button>
-
       <div id="msg" class="msg"></div>
-
       <div class="switch-text">
         Already have an account? <a href="index.html">Log In</a>
       </div>
     </div>
   </div>
-
   <script type="module">
     import { supabase } from './supabase.js'
     window.signup = async function () {
@@ -50,7 +55,6 @@
       const msg      = document.getElementById('msg')
       msg.className  = 'msg'
       msg.textContent = ''
-
       if (!username || !email || !password) {
         msg.className = 'msg error'
         msg.textContent = 'Please fill in all fields.'
@@ -61,31 +65,24 @@
         msg.textContent = 'Password must be at least 6 characters.'
         return
       }
-
-      // 1. Create auth account
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) {
         msg.className = 'msg error'
         msg.textContent = error.message
         return
       }
-
-      // 2. Save profile to database
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({ id: data.user.id, username, email })
-
       if (profileError) {
         msg.className = 'msg error'
         msg.textContent = 'Account created but profile save failed: ' + profileError.message
         return
       }
-
       msg.className = 'msg success'
       msg.textContent = '🎉 Account created! Redirecting...'
       setTimeout(() => window.location.href = 'feed.html', 1500)
     }
   </script>
-
 </body>
 </html>

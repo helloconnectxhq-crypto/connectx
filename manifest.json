@@ -1,12 +1,16 @@
 {
-  "name": "ConnectX",
+  "id": "connectx-social-app",
+  "name": "ConnectX – Connect Beyond Limits",
   "short_name": "ConnectX",
-  "description": "Connect Beyond Limits",
+  "description": "Real-time messaging, video calls, live streaming, reels & stories. Free social media app.",
   "start_url": "/feed.html",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#6C63FF",
   "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["social", "communication", "entertainment"],
   "icons": [
     {
       "src": "icon-192.png",
@@ -33,6 +37,38 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [],
-  "categories": ["social", "communication"]
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ConnectX Feed"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "Open ConnectX Messages",
+      "url": "/messages.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Reels",
+      "short_name": "Reels",
+      "description": "Watch ConnectX Reels",
+      "url": "/reels.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Live",
+      "short_name": "Live",
+      "description": "Go Live on ConnectX",
+      "url": "/live.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

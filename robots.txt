@@ -1,0 +1,28 @@
+# ConnectX - robots.txt
+User-agent: *
+Allow: /
+Allow: /feed.html
+Allow: /reels.html
+Allow: /search.html
+Allow: /live.html
+Allow: /signup.html
+Allow: /index.html
+Disallow: /messages.html
+Disallow: /profile.html
+Disallow: /supabase.js
+Disallow: /realtime.js
+
+# Sitemaps
+Sitemap: https://connectx-psi.vercel.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Allow major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
