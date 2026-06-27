@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>ConnectX – Reels</title>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#000000"/>
@@ -17,7 +17,6 @@
       height: 100vh;
     }
 
-    /* ===== REELS CONTAINER ===== */
     .reels-container {
       height: 100vh;
       overflow-y: scroll;
@@ -27,7 +26,6 @@
 
     .reels-container::-webkit-scrollbar { display: none; }
 
-    /* ===== SINGLE REEL ===== */
     .reel-item {
       height: 100vh;
       width: 100%;
@@ -46,19 +44,13 @@
       object-fit: cover;
     }
 
-    /* Gradient overlay */
     .reel-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        transparent 30%,
-        rgba(0,0,0,0.3) 60%,
-        rgba(0,0,0,0.85) 100%
-      );
+      background: linear-gradient(transparent 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.85) 100%);
       pointer-events: none;
     }
 
-    /* ===== TOP NAV ===== */
     .reels-nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -76,37 +68,37 @@
       color: #fff;
     }
 
-    .reels-nav-tabs {
+    .reels-nav-actions {
       display: flex;
-      gap: 20px;
+      gap: 12px;
+      align-items: center;
     }
 
-    .nav-tab {
-      font-size: 15px;
+    .reels-nav-actions a {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
       font-weight: 600;
-      color: rgba(255,255,255,0.6);
-      cursor: pointer;
-      transition: color 0.2s;
-      background: none;
-      border: none;
-      padding: 0;
+      text-decoration: none;
     }
-
-    .nav-tab.active { color: #fff; border-bottom: 2px solid #fff; }
 
     .back-btn {
-      background: none; border: none;
-      color: #fff; font-size: 22px;
-      cursor: pointer; padding: 4px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px;
     }
 
     .upload-btn {
-      background: none; border: none;
-      color: #fff; font-size: 24px;
-      cursor: pointer; padding: 4px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
     }
 
-    /* ===== RIGHT ACTIONS ===== */
     .reel-actions {
       position: absolute;
       right: 16px;
@@ -114,7 +106,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
       z-index: 10;
     }
 
@@ -129,18 +121,21 @@
     }
 
     .action-icon {
-      width: 48px; height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
       transition: background 0.2s, transform 0.15s;
       border: 1px solid rgba(255,255,255,0.2);
     }
 
     .reel-action-btn:active .action-icon { transform: scale(0.88); }
-    .reel-action-btn.liked .action-icon  { background: rgba(255,101,132,0.3); }
+    .reel-action-btn.liked .action-icon { background: rgba(255,101,132,0.3); }
 
     .action-count {
       font-size: 12px;
@@ -148,37 +143,46 @@
       color: #fff;
     }
 
-    /* Avatar in actions */
     .reel-avatar-btn {
       position: relative;
       cursor: pointer;
     }
 
     .reel-avatar {
-      width: 48px; height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       border: 2px solid #fff;
       overflow: hidden;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 700; color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
     }
 
     .reel-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .follow-dot {
       position: absolute;
-      bottom: -4px; left: 50%;
+      bottom: -4px;
+      left: 50%;
       transform: translateX(-50%);
-      width: 20px; height: 20px;
+      width: 20px;
+      height: 20px;
       background: var(--violet);
       border-radius: 50%;
       border: 2px solid #000;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: #fff; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700;
     }
 
-    /* ===== BOTTOM INFO ===== */
     .reel-info {
       position: absolute;
       bottom: 0; left: 0; right: 70px;
@@ -187,47 +191,66 @@
     }
 
     .reel-username {
-      font-size: 15px; font-weight: 700;
-      color: #fff; margin-bottom: 6px;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .reel-follow-btn {
-      font-size: 12px; font-weight: 700;
-      color: #fff; border: 1px solid #fff;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      border: 1px solid #fff;
       background: transparent;
-      padding: 3px 10px; border-radius: 6px;
-      cursor: pointer; transition: background 0.2s;
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
     .reel-follow-btn:hover { background: rgba(255,255,255,0.2); }
     .reel-follow-btn.following { border-color: var(--violet); color: var(--violet); }
 
     .reel-caption {
-      font-size: 14px; color: rgba(255,255,255,0.9);
-      line-height: 1.5; margin-bottom: 10px;
-      max-height: 60px; overflow: hidden;
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+      margin-bottom: 10px;
+      max-height: 60px;
+      overflow: hidden;
     }
 
     .reel-caption.expanded { max-height: none; }
 
     .read-more {
-      font-size: 13px; color: rgba(255,255,255,0.6);
-      cursor: pointer; background: none; border: none;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      background: none;
+      border: none;
       padding: 0;
     }
 
-    /* Music ticker */
     .reel-music {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
     }
 
     .music-disc {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: linear-gradient(135deg, #6C63FF, #FF6584);
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 13px;
       animation: spin 3s linear infinite;
     }
@@ -240,7 +263,6 @@
       max-width: 180px;
     }
 
-    /* Play/Pause tap */
     .tap-overlay {
       position: absolute;
       inset: 0;
@@ -263,12 +285,13 @@
       opacity: 1;
     }
 
-    /* ===== UPLOAD MODAL ===== */
     .upload-modal {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.9);
       z-index: 500;
-      display: none; align-items: center; justify-content: center;
+      display: none;
+      align-items: center;
+      justify-content: center;
       backdrop-filter: blur(10px);
     }
 
@@ -278,30 +301,37 @@
       background: #1A1A2E;
       border-radius: 24px;
       padding: 28px 24px;
-      width: 100%; max-width: 420px;
+      width: 100%;
+      max-width: 420px;
       border: 1px solid rgba(255,255,255,0.1);
       animation: slideUp 0.3s ease;
     }
 
     @keyframes slideUp {
       from { transform: translateY(30px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     .upload-title {
-      font-size: 20px; font-weight: 800;
-      color: #fff; margin-bottom: 20px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 20px;
       text-align: center;
     }
 
     .video-preview-box {
-      width: 100%; height: 240px;
+      width: 100%;
+      height: 240px;
       border-radius: 16px;
       background: rgba(255,255,255,0.05);
       border: 2px dashed rgba(255,255,255,0.2);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      cursor: pointer; margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 16px;
       transition: border-color 0.2s;
       overflow: hidden;
     }
@@ -330,28 +360,36 @@
     .upload-actions { display: flex; gap: 10px; }
 
     .upload-cancel {
-      flex: 1; padding: 13px;
+      flex: 1;
+      padding: 13px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.15);
       background: transparent;
       color: rgba(255,255,255,0.6);
-      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     .upload-submit {
-      flex: 2; padding: 13px;
-      border-radius: 12px; border: none;
+      flex: 2;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      color: #fff; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: opacity 0.2s;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
     }
 
-    .upload-submit:hover   { opacity: 0.9; }
+    .upload-submit:hover { opacity: 0.9; }
     .upload-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Progress bar */
     .upload-progress {
-      width: 100%; height: 4px;
+      width: 100%;
+      height: 4px;
       background: rgba(255,255,255,0.1);
       border-radius: 2px;
       margin-bottom: 16px;
@@ -368,7 +406,6 @@
       transition: width 0.3s;
     }
 
-    /* Comments Panel */
     .comments-panel {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -379,40 +416,54 @@
       transform: translateY(100%);
       transition: transform 0.3s ease;
       max-height: 60vh;
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
     }
 
     .comments-panel.open { transform: translateY(0); }
 
     .panel-handle {
-      width: 40px; height: 4px;
+      width: 40px;
+      height: 4px;
       background: rgba(255,255,255,0.2);
       border-radius: 2px;
       margin: 0 auto 16px;
     }
 
     .panel-title {
-      font-size: 16px; font-weight: 700;
-      color: #fff; margin-bottom: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
       text-align: center;
     }
 
     .comments-scroll {
-      flex: 1; overflow-y: auto;
+      flex: 1;
+      overflow-y: auto;
       margin-bottom: 12px;
       scrollbar-width: thin;
     }
 
     .comment-item {
-      display: flex; gap: 10px;
-      margin-bottom: 14px; align-items: flex-start;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: flex-start;
     }
 
     .comment-av {
-      width: 32px; height: 32px; border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
     }
 
     .comment-body { flex: 1; }
@@ -421,30 +472,44 @@
     .comment-time { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
 
     .comment-input-row {
-      display: flex; gap: 8px; align-items: center;
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
 
     .comment-inp {
-      flex: 1; background: rgba(255,255,255,0.07);
+      flex: 1;
+      background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px; color: #fff;
-      font-size: 13px; padding: 10px 14px; outline: none;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 13px;
+      padding: 10px 14px;
+      outline: none;
     }
 
     .comment-inp:focus { border-color: var(--violet); }
 
     .comment-send-btn {
-      background: var(--violet); border: none;
-      border-radius: 50%; width: 36px; height: 36px;
-      color: #fff; font-size: 15px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      background: var(--violet);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Empty state */
     .reels-empty {
       height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       color: rgba(255,255,255,0.5);
       gap: 16px;
     }
@@ -454,33 +519,88 @@
 
     .start-upload-btn {
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      color: #fff; border: none;
-      padding: 14px 28px; border-radius: 14px;
-      font-size: 15px; font-weight: 700;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    /* Toast */
     .toast {
-      position: fixed; bottom: 100px; left: 50%;
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
       transform: translateX(-50%) translateY(40px);
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
-      color: #fff; padding: 12px 24px;
-      border-radius: 12px; font-size: 14px; font-weight: 600;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
       border: 1px solid rgba(255,255,255,0.2);
-      transition: transform 0.3s ease; z-index: 9999;
+      transition: transform 0.3s ease;
+      z-index: 9999;
       opacity: 0;
     }
 
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* Loading */
     .reel-loader {
       height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: rgba(255,255,255,0.5);
       font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .reel-actions {
+        right: 10px;
+        bottom: 80px;
+        gap: 14px;
+      }
+
+      .action-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+      }
+
+      .reel-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+      }
+
+      .reel-info {
+        padding: 12px 12px 20px;
+        right: 60px;
+      }
+
+      .reel-username {
+        font-size: 13px;
+      }
+
+      .reel-caption {
+        font-size: 13px;
+        max-height: 40px;
+      }
+
+      .action-count {
+        font-size: 10px;
+      }
+
+      .reels-nav {
+        padding: 10px 14px;
+      }
+
+      .reels-nav-title {
+        font-size: 15px;
+      }
     }
   </style>
 </head>
@@ -489,11 +609,11 @@
   <!-- Top Nav -->
   <div class="reels-nav">
     <a href="feed.html" class="back-btn">←</a>
-    <div class="reels-nav-tabs">
-      <button class="nav-tab">Following</button>
-      <button class="nav-tab active">For You</button>
+    <div class="reels-nav-title">🎬 Reels</div>
+    <div class="reels-nav-actions">
+      <a href="feed.html">🏠</a>
+      <button class="upload-btn" onclick="openUpload()">＋</button>
     </div>
-    <button class="upload-btn" onclick="openUpload()">＋</button>
   </div>
 
   <!-- Reels Container -->
@@ -542,12 +662,12 @@
   <script type="module">
     import { supabase } from './supabase.js'
 
-    let currentUser    = null
+    let currentUser = null
     let currentProfile = null
-    let reels          = []
-    let activeReelId   = null
-    let followingIds   = new Set()
-    let likedIds       = new Set()
+    let reels = []
+    let activeReelId = null
+    let followingIds = new Set()
+    let likedIds = new Set()
 
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
@@ -591,21 +711,27 @@
       reels = data
       container.innerHTML = data.map((reel, idx) => renderReel(reel, idx)).join('')
 
-      // Setup intersection observer for autoplay
+      // Subscribe to real-time updates
+      data.forEach(reel => {
+        subscribeToReelLikes(reel.id)
+      })
+
+      // Setup autoplay
       setupAutoplay()
     }
 
     function renderReel(reel, idx) {
-      const user       = reel.profiles
-      const username   = user?.username || 'user'
-      const initial    = username[0].toUpperCase()
+      const user = reel.profiles
+      const username = user?.username || 'user'
+      const initial = username[0].toUpperCase()
       const avatarHtml = user?.avatar_url
         ? `<img src="${user.avatar_url}" alt="${username}"/>`
         : initial
       const isFollowing = followingIds.has(reel.user_id)
-      const isOwn       = reel.user_id === currentUser.id
-      const caption     = reel.caption || ''
+      const isOwn = reel.user_id === currentUser.id
+      const caption = reel.caption || ''
       const shortCaption = caption.length > 80 ? caption.substring(0, 80) + '...' : caption
+      const isLiked = likedIds.has(reel.id)
 
       return `
         <div class="reel-item" id="reel-${reel.id}" data-reel-id="${reel.id}" data-index="${idx}">
@@ -620,37 +746,30 @@
 
           <div class="reel-overlay"></div>
 
-          <!-- Tap to play/pause -->
           <div class="tap-overlay" onclick="togglePlay('${reel.id}')"></div>
           <div class="play-pause-icon" id="ppi-${reel.id}">⏸</div>
 
-          <!-- Right Actions -->
           <div class="reel-actions">
-            <!-- Avatar -->
             <div class="reel-avatar-btn" onclick="visitProfile('${reel.user_id}')">
               <div class="reel-avatar">${avatarHtml}</div>
               ${!isOwn ? `<div class="follow-dot" id="fdot-${reel.id}" onclick="event.stopPropagation();toggleFollowReel('${reel.user_id}','${reel.id}')">${isFollowing ? '✓' : '+'}</div>` : ''}
             </div>
 
-            <!-- Like -->
-            <button class="reel-action-btn ${likedIds.has(reel.id) ? 'liked' : ''}" id="like-btn-${reel.id}" onclick="toggleReelLike('${reel.id}')">
+            <button class="reel-action-btn ${isLiked ? 'liked' : ''}" id="like-btn-${reel.id}" onclick="toggleReelLike('${reel.id}')">
               <div class="action-icon">❤️</div>
               <span class="action-count" id="like-count-${reel.id}">${reel.likes_count || 0}</span>
             </button>
 
-            <!-- Comment -->
             <button class="reel-action-btn" onclick="openComments('${reel.id}')">
               <div class="action-icon">💬</div>
-              <span class="action-count">0</span>
+              <span class="action-count" id="comment-count-${reel.id}">0</span>
             </button>
 
-            <!-- Share -->
             <button class="reel-action-btn" onclick="shareReel('${reel.id}')">
               <div class="action-icon">↗️</div>
               <span class="action-count">Share</span>
             </button>
 
-            <!-- More -->
             ${isOwn ? `
             <button class="reel-action-btn" onclick="deleteReel('${reel.id}')">
               <div class="action-icon">🗑️</div>
@@ -658,7 +777,6 @@
             </button>` : ''}
           </div>
 
-          <!-- Bottom Info -->
           <div class="reel-info">
             <div class="reel-username">
               @${username}
@@ -679,21 +797,40 @@
         </div>`
     }
 
+    // ===== REAL-TIME REEL LIKES =====
+    function subscribeToReelLikes(reelId) {
+      supabase.channel(`reel-likes-${reelId}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'reels',
+          filter: `id=eq.${reelId}`
+        }, (payload) => {
+          const newCount = payload.new.likes_count
+          const countEl = document.getElementById(`like-count-${reelId}`)
+          if (countEl) {
+            countEl.textContent = newCount
+          }
+        })
+        .subscribe()
+    }
+
     // ===== AUTOPLAY =====
     function setupAutoplay() {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          const reelId  = entry.target.dataset.reelId
-          const video   = document.getElementById(`video-${reelId}`)
+          const reelId = entry.target.dataset.reelId
+          const video = document.getElementById(`video-${reelId}`)
           if (!video) return
 
           if (entry.isIntersecting) {
             video.play().catch(() => {})
             activeReelId = reelId
             recordView(reelId)
+            // Load comments count
+            loadReelCommentCount(reelId)
           } else {
             video.pause()
-            video.currentTime = 0
           }
         })
       }, { threshold: 0.7 })
@@ -707,10 +844,20 @@
         .eq('id', reelId)
     }
 
+    async function loadReelCommentCount(reelId) {
+      const { count } = await supabase
+        .from('comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('reel_id', reelId)
+      
+      const countEl = document.getElementById(`comment-count-${reelId}`)
+      if (countEl) countEl.textContent = count || 0
+    }
+
     // ===== PLAY/PAUSE =====
-    window.togglePlay = function (reelId) {
-      const video  = document.getElementById(`video-${reelId}`)
-      const icon   = document.getElementById(`ppi-${reelId}`)
+    window.togglePlay = function(reelId) {
+      const video = document.getElementById(`video-${reelId}`)
+      const icon = document.getElementById(`ppi-${reelId}`)
       if (!video) return
 
       if (video.paused) {
@@ -726,10 +873,10 @@
     }
 
     // ===== LIKE =====
-    window.toggleReelLike = async function (reelId) {
-      const btn      = document.getElementById(`like-btn-${reelId}`)
-      const countEl  = document.getElementById(`like-count-${reelId}`)
-      const isLiked  = likedIds.has(reelId)
+    window.toggleReelLike = async function(reelId) {
+      const btn = document.getElementById(`like-btn-${reelId}`)
+      const countEl = document.getElementById(`like-count-${reelId}`)
+      const isLiked = likedIds.has(reelId)
       const newCount = parseInt(countEl.textContent) + (isLiked ? -1 : 1)
 
       countEl.textContent = newCount
@@ -745,10 +892,10 @@
     }
 
     // ===== FOLLOW =====
-    window.toggleFollowReel = async function (userId, reelId) {
+    window.toggleFollowReel = async function(userId, reelId) {
       const isFollowing = followingIds.has(userId)
-      const fbtn  = document.getElementById(`fbtn-${reelId}`)
-      const fdot  = document.getElementById(`fdot-${reelId}`)
+      const fbtn = document.getElementById(`fbtn-${reelId}`)
+      const fdot = document.getElementById(`fdot-${reelId}`)
 
       if (isFollowing) {
         followingIds.delete(userId)
@@ -770,7 +917,7 @@
     // ===== COMMENTS =====
     let activeCommentReelId = null
 
-    window.openComments = async function (reelId) {
+    window.openComments = async function(reelId) {
       activeCommentReelId = reelId
       document.getElementById('commentsPanel').classList.add('open')
       await loadReelComments(reelId)
@@ -810,19 +957,26 @@
       }).join('')
     }
 
-    window.sendReelComment = async function () {
-      const input   = document.getElementById('reelCommentInput')
+    window.sendReelComment = async function() {
+      const input = document.getElementById('reelCommentInput')
       const content = input.value.trim()
       if (!content || !activeCommentReelId) return
       input.value = ''
 
       await supabase.from('comments').insert({
-        reel_id:  activeCommentReelId,
-        user_id:  currentUser.id,
+        reel_id: activeCommentReelId,
+        user_id: currentUser.id,
         content
       })
 
       await loadReelComments(activeCommentReelId)
+      
+      // Update comment count
+      const countEl = document.getElementById(`comment-count-${activeCommentReelId}`)
+      if (countEl) {
+        const current = parseInt(countEl.textContent) || 0
+        countEl.textContent = current + 1
+      }
     }
 
     document.getElementById('reelCommentInput').addEventListener('keydown', (e) => {
@@ -830,13 +984,13 @@
     })
 
     // ===== SHARE =====
-    window.shareReel = function (reelId) {
+    window.shareReel = function(reelId) {
       const url = `${window.location.origin}/reels.html#${reelId}`
       navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copied!'))
     }
 
     // ===== DELETE =====
-    window.deleteReel = async function (reelId) {
+    window.deleteReel = async function(reelId) {
       if (!confirm('Delete this reel?')) return
       const { error } = await supabase.from('reels').delete().eq('id', reelId)
       if (!error) {
@@ -846,47 +1000,47 @@
     }
 
     // ===== EXPAND CAPTION =====
-    window.expandCaption = function (reelId) {
-      const reel    = reels.find(r => r.id === reelId)
+    window.expandCaption = function(reelId) {
+      const reel = reels.find(r => r.id === reelId)
       const captionEl = document.getElementById(`caption-${reelId}`)
       if (captionEl && reel) {
         captionEl.textContent = reel.caption
+        captionEl.className = 'reel-caption expanded'
         captionEl.nextElementSibling?.remove()
       }
     }
 
     // ===== UPLOAD =====
-    window.openUpload  = () => document.getElementById('uploadModal').classList.add('open')
+    window.openUpload = () => document.getElementById('uploadModal').classList.add('open')
     window.closeUpload = () => {
       document.getElementById('uploadModal').classList.remove('open')
       document.getElementById('videoPreviewBox').innerHTML = '<div class="upload-icon">🎥</div><div class="upload-hint">Tap to choose video</div>'
       document.getElementById('reel-caption').value = ''
-      document.getElementById('reel-file').value    = ''
+      document.getElementById('reel-file').value = ''
       document.getElementById('uploadProgress').classList.remove('show')
       document.getElementById('progressBar').style.width = '0%'
       document.getElementById('uploadSubmitBtn').disabled = false
     }
 
-    window.previewReel = function (event) {
+    window.previewReel = function(event) {
       const file = event.target.files[0]
       if (!file) return
-      const url  = URL.createObjectURL(file)
-      const box  = document.getElementById('videoPreviewBox')
+      const url = URL.createObjectURL(file)
+      const box = document.getElementById('videoPreviewBox')
       box.innerHTML = `<video src="${url}" controls style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></video>`
     }
 
-    window.uploadReel = async function () {
-      const file    = document.getElementById('reel-file').files[0]
+    window.uploadReel = async function() {
+      const file = document.getElementById('reel-file').files[0]
       const caption = document.getElementById('reel-caption').value.trim()
-      const btn     = document.getElementById('uploadSubmitBtn')
+      const btn = document.getElementById('uploadSubmitBtn')
 
       if (!file) { showToast('🎥 Choose a video first!'); return }
 
-      btn.disabled    = true
+      btn.disabled = true
       btn.textContent = 'Uploading...'
       document.getElementById('uploadProgress').classList.add('show')
 
-      // Simulate progress
       let progress = 0
       const progInterval = setInterval(() => {
         progress = Math.min(progress + 10, 85)
@@ -909,7 +1063,7 @@
       const { data: urlData } = supabase.storage.from('reels').getPublicUrl(fileName)
 
       const { error } = await supabase.from('reels').insert({
-        user_id:   currentUser.id,
+        user_id: currentUser.id,
         video_url: urlData.publicUrl,
         caption
       })
@@ -925,7 +1079,7 @@
       loadReels()
     }
 
-    window.visitProfile = function (userId) {
+    window.visitProfile = function(userId) {
       if (userId === currentUser.id) {
         window.location.href = 'profile.html'
       } else {
@@ -942,8 +1096,8 @@
 
     function formatTime(dateStr) {
       const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000)
-      if (diff < 60)    return `${diff}s ago`
-      if (diff < 3600)  return `${Math.floor(diff/60)}m ago`
+      if (diff < 60) return `${diff}s ago`
+      if (diff < 3600) return `${Math.floor(diff/60)}m ago`
       if (diff < 86400) return `${Math.floor(diff/3600)}h ago`
       return `${Math.floor(diff/86400)}d ago`
     }

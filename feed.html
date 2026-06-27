@@ -5,22 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>ConnectX – Feed</title>
   <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#6C63FF"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="stylesheet" href="style.css"/>
   <style>
+    /* ===== STORIES BAR ===== */
     .stories-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 14px 16px;
+      padding: 12px 16px;
       overflow-x: auto;
+      overflow-y: hidden;
       scrollbar-width: none;
       display: flex;
       gap: 14px;
-      min-height: 100px;
       align-items: center;
+      min-height: 90px;
       width: 100%;
       box-sizing: border-box;
+      -webkit-overflow-scrolling: touch;
     }
     .stories-bar::-webkit-scrollbar { display: none; }
 
@@ -28,14 +31,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       cursor: pointer;
       flex-shrink: 0;
-      min-width: 64px;
+      min-width: 60px;
+      max-width: 70px;
     }
 
     .story-ring {
-      width: 64px; 
+      width: 64px;
       height: 64px;
       border-radius: 50%;
       padding: 3px;
@@ -44,50 +48,56 @@
       transition: transform 0.2s;
       flex-shrink: 0;
     }
-
-    .story-ring:hover { transform: scale(1.08); }
-    .story-ring.seen  { background: var(--border); }
+    .story-ring:hover { transform: scale(1.05); }
+    .story-ring.seen { background: var(--border); }
 
     .story-ring-inner {
-      width: 100%; 
+      width: 100%;
       height: 100%;
       border-radius: 50%;
       overflow: hidden;
       border: 3px solid var(--surface);
       background: var(--card);
-      display: flex; 
-      align-items: center; 
+      display: flex;
+      align-items: center;
       justify-content: center;
-      font-size: 22px; 
-      font-weight: 800; 
+      font-size: 20px;
+      font-weight: 800;
       color: #fff;
     }
-
     .story-ring-inner img { width: 100%; height: 100%; object-fit: cover; }
 
     .add-story-btn {
       position: absolute;
-      bottom: 0; right: 0;
-      width: 22px; height: 22px;
+      bottom: -2px;
+      right: -2px;
+      width: 22px;
+      height: 22px;
       background: var(--violet);
       border-radius: 50%;
       border: 2px solid var(--surface);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: #fff; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #fff;
+      font-weight: 700;
     }
 
     .story-username {
-      font-size: 11px; 
+      font-size: 10px;
       color: var(--text-sub);
-      max-width: 64px; 
+      max-width: 60px;
       text-align: center;
-      overflow: hidden; 
-      text-overflow: ellipsis; 
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
+      margin-top: 2px;
     }
 
     .story-viewer {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: #000;
       z-index: 1000;
       display: none;
@@ -96,366 +106,555 @@
     .story-viewer.open { display: flex; }
 
     .story-progress-bar {
-      display: flex; gap: 4px;
+      display: flex;
+      gap: 4px;
       padding: 12px 12px 0;
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 10;
     }
-
     .progress-segment {
-      flex: 1; height: 3px;
+      flex: 1;
+      height: 3px;
       background: rgba(255,255,255,0.35);
-      border-radius: 2px; overflow: hidden;
+      border-radius: 2px;
+      overflow: hidden;
     }
-
     .progress-fill {
-      height: 100%; background: #fff;
-      width: 0%; transition: width linear;
+      height: 100%;
+      background: #fff;
+      width: 0%;
+      transition: width linear;
     }
 
     .story-header {
       position: absolute;
-      top: 24px; left: 0; right: 0;
+      top: 24px;
+      left: 0;
+      right: 0;
       padding: 10px 16px;
-      display: flex; align-items: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       z-index: 10;
     }
-
     .story-header-avatar {
-      width: 38px; height: 38px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: 2px solid #fff;
       overflow: hidden;
       background: var(--violet);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
     }
-
     .story-header-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .story-header-info { flex: 1; }
+    .story-header-info { flex: 1; min-width: 0; }
     .story-header-name { font-size: 14px; font-weight: 700; color: #fff; }
     .story-header-time { font-size: 11px; color: rgba(255,255,255,0.7); }
 
     .story-close-btn {
-      background: none; border: none;
-      color: #fff; font-size: 24px;
-      cursor: pointer; padding: 4px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
     }
 
     .story-media {
       flex: 1;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
     }
-
     .story-media img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
     .story-caption {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       padding: 60px 20px 20px;
       background: linear-gradient(transparent, rgba(0,0,0,0.8));
-      color: #fff; font-size: 16px; text-align: center;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
     }
 
     .story-nav {
-      position: absolute; top: 0; bottom: 0;
-      width: 40%; cursor: pointer;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 40%;
+      cursor: pointer;
+      z-index: 5;
     }
     .story-nav.prev { left: 0; }
     .story-nav.next { right: 0; }
 
     .story-views {
       position: absolute;
-      bottom: 70px; left: 50%;
+      bottom: 70px;
+      left: 50%;
       transform: translateX(-50%);
       background: rgba(0,0,0,0.5);
-      color: #fff; padding: 6px 14px;
-      border-radius: 20px; font-size: 13px;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
       backdrop-filter: blur(4px);
     }
 
+    /* ===== COMMENTS ===== */
     .comments-section {
       border-top: 1px solid var(--border);
-      margin-top: 12px; padding-top: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
       display: none;
     }
     .comments-section.open { display: block; }
 
     .comment-item {
-      display: flex; gap: 10px;
-      margin-bottom: 12px; align-items: flex-start;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: flex-start;
     }
-
     .comment-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
     }
-
     .comment-bubble {
       background: var(--card);
       border-radius: 12px;
-      padding: 8px 12px; flex: 1;
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .comment-username {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--violet);
+      margin-bottom: 2px;
+    }
+    .comment-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .comment-time {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 4px;
     }
 
-    .comment-username { font-size: 12px; font-weight: 700; color: var(--violet); margin-bottom: 2px; }
-    .comment-text    { font-size: 13px; color: var(--text); line-height: 1.5; }
-    .comment-time    { font-size: 11px; color: var(--text-sub); margin-top: 4px; }
-
-    .comment-input-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
-
+    .comment-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
     .comment-input {
-      flex: 1; background: var(--card);
+      flex: 1;
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 20px; color: var(--text);
-      font-size: 13px; padding: 8px 14px;
-      outline: none; transition: border 0.2s;
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 8px 14px;
+      outline: none;
+      transition: border 0.2s;
     }
     .comment-input:focus { border-color: var(--violet); }
-
     .comment-send {
-      background: var(--violet); border: none;
-      border-radius: 50%; width: 34px; height: 34px;
-      color: #fff; font-size: 15px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, transform 0.1s; flex-shrink: 0;
+      background: var(--violet);
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+      flex-shrink: 0;
     }
-    .comment-send:hover  { background: var(--violet-dark); }
+    .comment-send:hover { background: var(--violet-dark); }
     .comment-send:active { transform: scale(0.9); }
-    .no-comments { font-size: 12px; color: var(--text-sub); text-align: center; padding: 8px 0; }
-
-    .post-footer { display: flex; gap: 8px; align-items: center; }
-
-    .action-btn {
-      background: none; border: none; color: var(--text-sub);
-      font-size: 13px; cursor: pointer;
-      display: flex; align-items: center; gap: 5px;
-      padding: 7px 12px; border-radius: 10px;
-      transition: background 0.2s, color 0.2s; font-weight: 500;
+    .no-comments {
+      font-size: 12px;
+      color: var(--text-sub);
+      text-align: center;
+      padding: 8px 0;
     }
-    .action-btn:hover      { background: var(--elevated); }
-    .like-btn:hover        { color: var(--coral); }
-    .like-btn.liked        { color: var(--coral); }
-    .comment-toggle:hover  { color: var(--violet); }
+
+    /* ===== POST ===== */
+    .post-footer {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 12px;
+      border-radius: 10px;
+      transition: background 0.2s, color 0.2s;
+      font-weight: 500;
+    }
+    .action-btn:hover { background: var(--elevated); }
+    .like-btn:hover { color: var(--coral); }
+    .like-btn.liked { color: var(--coral); }
+    .comment-toggle:hover { color: var(--violet); }
     .comment-toggle.active { color: var(--violet); }
 
+    /* ===== NOTIFICATIONS ===== */
     .notif-bell {
-      position: relative; cursor: pointer;
-      font-size: 20px; margin-right: 4px;
+      position: relative;
+      cursor: pointer;
+      font-size: 20px;
+      margin-right: 4px;
     }
-
     .notif-badge {
-      position: absolute; top: -6px; right: -6px;
-      background: var(--coral); color: #fff;
-      font-size: 10px; font-weight: 700;
-      border-radius: 50%; width: 18px; height: 18px;
-      display: none; align-items: center; justify-content: center;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--coral);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
     }
     .notif-badge.show { display: flex; }
 
     .notif-dropdown {
-      position: absolute; top: 60px; right: 80px;
-      width: 320px; background: var(--surface);
+      position: absolute;
+      top: 60px;
+      right: 80px;
+      width: 320px;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      z-index: 200; display: none; overflow: hidden;
+      z-index: 200;
+      display: none;
+      overflow: hidden;
     }
     .notif-dropdown.open { display: block; }
 
     .notif-header {
-      padding: 14px 16px; font-size: 14px; font-weight: 700;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 700;
       border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
     .mark-read-btn {
-      font-size: 11px; color: var(--violet);
-      background: none; border: none; cursor: pointer; font-weight: 600;
+      font-size: 11px;
+      color: var(--violet);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
     }
-
     .notif-list { max-height: 320px; overflow-y: auto; }
-
     .notif-item {
-      padding: 12px 16px; border-bottom: 1px solid var(--border);
-      display: flex; gap: 10px; align-items: flex-start;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
       transition: background 0.2s;
     }
-    .notif-item:hover  { background: var(--elevated); }
+    .notif-item:hover { background: var(--elevated); }
     .notif-item.unread { background: rgba(108,99,255,0.08); }
     .notif-item:last-child { border-bottom: none; }
-
     .notif-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
       background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
     }
-    .notif-text  { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .notif-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
     .notif-text span { font-weight: 700; color: var(--violet); }
-    .notif-time  { font-size: 11px; color: var(--text-sub); margin-top: 3px; }
-    .notif-empty { padding: 30px; text-align: center; color: var(--text-sub); font-size: 13px; }
+    .notif-time {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 3px;
+    }
+    .notif-empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
 
+    /* ===== STORY UPLOAD ===== */
     .story-upload-modal {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: rgba(0,0,0,0.8);
       z-index: 500;
-      display: none; align-items: center; justify-content: center;
+      display: none;
+      align-items: center;
+      justify-content: center;
       backdrop-filter: blur(6px);
     }
     .story-upload-modal.open { display: flex; }
-
     .story-upload-card {
       background: var(--surface);
       border-radius: 20px;
       padding: 28px 24px;
-      width: 100%; max-width: 400px;
+      width: 100%;
+      max-width: 400px;
       border: 1px solid var(--border);
       animation: slideUp 0.25s ease;
     }
-
     @keyframes slideUp {
       from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+      to { transform: translateY(0); opacity: 1; }
     }
-
     .story-preview {
-      width: 100%; height: 220px;
-      border-radius: 14px; overflow: hidden;
+      width: 100%;
+      height: 220px;
+      border-radius: 14px;
+      overflow: hidden;
       background: var(--card);
       margin-bottom: 14px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-sub); font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-sub);
+      font-size: 14px;
       cursor: pointer;
       border: 2px dashed var(--border);
       transition: border-color 0.2s;
     }
     .story-preview:hover { border-color: var(--violet); }
-    .story-preview img   { width: 100%; height: 100%; object-fit: cover; }
+    .story-preview img { width: 100%; height: 100%; object-fit: cover; }
 
+    /* ===== TOAST ===== */
     .toast {
-      position: fixed; bottom: 24px; left: 50%;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--elevated); color: var(--text);
-      padding: 12px 24px; border-radius: 12px;
-      font-size: 14px; font-weight: 600;
+      background: var(--elevated);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
       border: 1px solid var(--border);
       transition: transform 0.3s ease;
       z-index: 9999;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ===== MOBILE FIXES ===== */
-    @media screen and (max-width: 768px) {
-      .stories-bar {
-        padding: 12px 12px;
-        gap: 10px;
-        min-height: 90px;
-        align-items: center;
-      }
-      
-      .story-ring {
-        width: 56px;
-        height: 56px;
-      }
-      
-      .story-username {
-        font-size: 10px;
-        max-width: 56px;
-      }
-      
-      .story-item {
-        min-width: 56px;
-      }
-      
-      .feed-page {
-        padding-top: 70px;
-        padding-left: 12px;
-        padding-right: 12px;
-      }
-      
-      .post-card {
-        padding: 12px;
-        border-radius: 12px;
-      }
-      
-      .create-post {
-        padding: 12px;
-        border-radius: 12px;
-      }
-      
-      .create-post textarea {
-        min-height: 60px;
-        font-size: 13px;
-        padding: 10px;
-      }
+    /* ===== FEED ===== */
+    .feed-page {
+      padding-top: 80px;
+      max-width: 600px;
+      margin: 0 auto;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .create-post {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .create-post textarea {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 12px;
+      resize: none;
+      outline: none;
+      min-height: 80px;
+    }
+    .create-post textarea:focus { border-color: var(--violet); }
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+    .img-label {
+      cursor: pointer;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .post-btn {
+      background: var(--violet);
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .post-btn:active { transform: scale(0.96); }
+
+    .post-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--violet);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .post-username { font-weight: 600; font-size: 14px; }
+    .post-time { font-size: 12px; color: var(--text-sub); }
+    .post-text {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .post-img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      max-height: 400px;
+      object-fit: cover;
+    }
+    .loader {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-sub);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; }
+    .msg {
+      margin-top: 14px;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+    .msg.success {
+      background: rgba(0,200,83,0.15);
+      color: var(--success);
+      display: block;
+    }
+    .msg.error {
+      background: rgba(255,82,82,0.15);
+      color: var(--error);
+      display: block;
     }
 
+    /* ===== MOBILE ===== */
+    @media screen and (max-width: 768px) {
+      .stories-bar { padding: 10px 12px; gap: 12px; min-height: 80px; }
+      .story-item { min-width: 52px; max-width: 60px; }
+      .story-ring { width: 56px; height: 56px; }
+      .story-ring-inner { font-size: 16px; }
+      .story-username { font-size: 9px; max-width: 52px; }
+      .add-story-btn { width: 20px; height: 20px; font-size: 12px; bottom: -1px; right: -1px; }
+    }
     @media screen and (max-width: 480px) {
-      .stories-bar {
-        padding: 10px 10px;
-        gap: 8px;
-        min-height: 80px;
-      }
-      
-      .story-ring {
-        width: 48px;
-        height: 48px;
-      }
-      
-      .story-ring-inner {
-        font-size: 16px;
-      }
-      
-      .story-username {
-        font-size: 9px;
-        max-width: 48px;
-      }
-      
-      .story-item {
-        min-width: 48px;
-      }
-      
-      .feed-page {
-        padding-top: 65px;
-        padding-left: 8px;
-        padding-right: 8px;
-      }
-      
-      .post-header .avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
-      }
-      
-      .post-username {
-        font-size: 13px;
-      }
-      
-      .post-text {
-        font-size: 13px;
-      }
-      
-      .action-btn {
-        font-size: 12px;
-        padding: 5px 8px;
-      }
+      .stories-bar { padding: 8px 10px; gap: 10px; min-height: 72px; }
+      .story-item { min-width: 46px; max-width: 52px; }
+      .story-ring { width: 48px; height: 48px; padding: 2px; }
+      .story-ring-inner { font-size: 14px; border-width: 2px; }
+      .story-username { font-size: 8px; max-width: 46px; }
+      .add-story-btn { width: 18px; height: 18px; font-size: 10px; border-width: 1.5px; }
+      .feed-page { padding-top: 70px; padding-left: 10px; padding-right: 10px; }
+      .post-card { padding: 12px; }
+      .create-post { padding: 12px; }
+      .action-btn { font-size: 12px; padding: 5px 8px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ===== NAVBAR ===== -->
   <nav class="navbar">
     <div class="nav-logo">ConnectX</div>
     <div class="nav-actions">
       <span id="nav-username" style="color:#8A8A9A;font-size:14px;"></span>
       <a href="messages.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">💬 Messages</a>
       <a href="reels.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🎬 Reels</a>
-      <a href="search.html"   style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔍 Search</a>
-      <a href="profile.html"  style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">👤 Profile</a>
+      <a href="live.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔴 Live</a>
+      <a href="search.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔍 Search</a>
+      <a href="profile.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">👤 Profile</a>
       <div class="notif-bell" onclick="toggleNotifDropdown()">
         🔔
         <div class="notif-badge" id="notifBadge">0</div>
@@ -464,6 +663,7 @@
     </div>
   </nav>
 
+  <!-- ===== NOTIFICATIONS ===== -->
   <div class="notif-dropdown" id="notifDropdown">
     <div class="notif-header">
       🔔 Notifications
@@ -474,6 +674,7 @@
     </div>
   </div>
 
+  <!-- ===== STORIES ===== -->
   <div class="stories-bar" id="storiesBar">
     <div class="story-item" onclick="openStoryUpload()">
       <div class="story-ring" id="myStoryRing">
@@ -484,6 +685,7 @@
     </div>
   </div>
 
+  <!-- ===== STORY VIEWER ===== -->
   <div class="story-viewer" id="storyViewer">
     <div class="story-progress-bar" id="storyProgressBar"></div>
     <div class="story-header">
@@ -503,6 +705,7 @@
     <div class="story-caption" id="storyCaption"></div>
   </div>
 
+  <!-- ===== STORY UPLOAD ===== -->
   <div class="story-upload-modal" id="storyUploadModal">
     <div class="story-upload-card">
       <div style="font-size:18px;font-weight:700;margin-bottom:16px;">✨ Add Story</div>
@@ -510,9 +713,9 @@
         📷 Click to choose photo
       </div>
       <input type="file" id="story-file" accept="image/*" style="display:none" onchange="previewStory(event)"/>
-      <div class="input-group">
-        <label>Caption (optional)</label>
-        <input type="text" id="story-caption-input" placeholder="Add a caption..."/>
+      <div class="input-group" style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;color:var(--text-sub);margin-bottom:6px;">Caption (optional)</label>
+        <input type="text" id="story-caption-input" placeholder="Add a caption..." style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;outline:none;"/>
       </div>
       <div style="display:flex;gap:10px;margin-top:16px;">
         <button onclick="closeStoryUpload()" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text-sub);font-weight:600;cursor:pointer;">Cancel</button>
@@ -521,6 +724,7 @@
     </div>
   </div>
 
+  <!-- ===== FEED ===== -->
   <div class="feed-page">
     <div class="create-post">
       <textarea id="post-text" placeholder="What's on your mind?"></textarea>
@@ -534,16 +738,17 @@
     <div id="feed"><div class="loader">Loading posts...</div></div>
   </div>
 
+  <!-- ===== TOAST ===== -->
   <div class="toast" id="toast"></div>
 
   <script type="module">
     import { supabase } from './supabase.js'
 
-    let currentUser    = null
+    let currentUser = null
     let currentProfile = null
-    let allStories     = []
+    let allStories = []
     let currentStoryGroupIndex = 0
-    let currentStoryIndex      = 0
+    let currentStoryIndex = 0
     let storyTimer = null
 
     async function init() {
@@ -568,16 +773,78 @@
       loadFeed()
       loadStories()
       loadNotifications()
+      subscribeToFeed()
 
       supabase.channel('notifications')
         .on('postgres_changes', {
-          event: 'INSERT', schema: 'public',
+          event: 'INSERT',
+          schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${currentUser.id}`
         }, () => loadNotifications())
         .subscribe()
     }
 
+    // ===== REAL-TIME SUBSCRIPTIONS =====
+    function subscribeToLikes(postId) {
+      supabase.channel(`likes-${postId}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'posts',
+          filter: `id=eq.${postId}`
+        }, (payload) => {
+          const newCount = payload.new.likes_count
+          const likeBtn = document.querySelector(`.like-btn[data-id="${postId}"]`)
+          if (likeBtn) {
+            const countSpan = likeBtn.querySelector('.like-count')
+            if (countSpan) countSpan.textContent = newCount
+          }
+        })
+        .subscribe()
+    }
+
+    function subscribeToComments(postId) {
+      supabase.channel(`comments-${postId}`)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `post_id=eq.${postId}`
+        }, (payload) => {
+          loadComments(postId)
+        })
+        .subscribe()
+    }
+
+    function subscribeToFeed() {
+      supabase.channel('feed-updates')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'posts'
+        }, (payload) => {
+          const newPost = payload.new
+          supabase.from('profiles')
+            .select('username, avatar_url')
+            .eq('id', newPost.user_id)
+            .single()
+            .then(({ data: user }) => {
+              const feedEl = document.getElementById('feed')
+              const postHtml = renderPost({
+                ...newPost,
+                profiles: user
+              })
+              feedEl.insertAdjacentHTML('afterbegin', postHtml)
+              subscribeToLikes(newPost.id)
+              subscribeToComments(newPost.id)
+              showToast(`📱 New post from @${user?.username || 'someone'}`)
+            })
+        })
+        .subscribe()
+    }
+
+    // ===== STORIES =====
     async function loadStories() {
       const { data: stories } = await supabase
         .from('stories')
@@ -585,7 +852,7 @@
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
 
-      const bar   = document.getElementById('storiesBar')
+      const bar = document.getElementById('storiesBar')
       const myBtn = bar.children[0]
       bar.innerHTML = ''
       bar.appendChild(myBtn)
@@ -601,12 +868,12 @@
       allStories = Object.values(groups)
 
       allStories.forEach((group, gIdx) => {
-        const user       = group[0].profiles
-        const username   = user?.username || 'user'
-        const initial    = username[0].toUpperCase()
-        const avatarHtml = user?.avatar_url
-          ? `<img src="${user.avatar_url}" alt="${username}"/>`
-          : initial
+        const user = group[0].profiles
+        const username = user?.username || 'user'
+        const initial = username[0].toUpperCase()
+        const avatarHtml = user?.avatar_url ?
+          `<img src="${user.avatar_url}" alt="${username}"/>` :
+          initial
 
         const item = document.createElement('div')
         item.className = 'story-item'
@@ -620,7 +887,7 @@
       })
     }
 
-    window.openStoryUpload  = () => document.getElementById('storyUploadModal').classList.add('open')
+    window.openStoryUpload = () => document.getElementById('storyUploadModal').classList.add('open')
     window.closeStoryUpload = () => {
       document.getElementById('storyUploadModal').classList.remove('open')
       document.getElementById('storyPreview').innerHTML = '📷 Click to choose photo'
@@ -628,15 +895,15 @@
       document.getElementById('story-file').value = ''
     }
 
-    window.previewStory = function (event) {
+    window.previewStory = function(event) {
       const file = event.target.files[0]
       if (!file) return
       const url = URL.createObjectURL(file)
       document.getElementById('storyPreview').innerHTML = `<img src="${url}" alt="preview"/>`
     }
 
-    window.uploadStory = async function () {
-      const file    = document.getElementById('story-file').files[0]
+    window.uploadStory = async function() {
+      const file = document.getElementById('story-file').files[0]
       const caption = document.getElementById('story-caption-input').value.trim()
       if (!file) { showToast('📷 Please choose a photo!'); return }
       showToast('⏳ Uploading story...')
@@ -645,8 +912,10 @@
       if (uploadError) { showToast('❌ Upload failed'); return }
       const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
       const { error } = await supabase.from('stories').insert({
-        user_id: currentUser.id, media_url: urlData.publicUrl,
-        media_type: 'image', caption
+        user_id: currentUser.id,
+        media_url: urlData.publicUrl,
+        media_type: 'image',
+        caption
       })
       if (error) { showToast('❌ Story failed'); return }
       showToast('✨ Story shared!')
@@ -654,9 +923,9 @@
       loadStories()
     }
 
-    window.openStoryViewer = async function (groupIndex) {
+    window.openStoryViewer = async function(groupIndex) {
       currentStoryGroupIndex = groupIndex
-      currentStoryIndex      = 0
+      currentStoryIndex = 0
       document.getElementById('storyViewer').classList.add('open')
       await showStory()
     }
@@ -666,22 +935,23 @@
       const group = allStories[currentStoryGroupIndex]
       if (!group || currentStoryIndex >= group.length) { closeStoryViewer(); return }
 
-      const story    = group[currentStoryIndex]
-      const user     = story.profiles
+      const story = group[currentStoryIndex]
+      const user = story.profiles
       const username = user?.username || 'user'
 
       const avatarEl = document.getElementById('viewerAvatar')
       if (user?.avatar_url) {
-        avatarEl.innerHTML = `<img src="${user.avatar_url}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`
+        avatarEl.innerHTML =
+          `<img src="${user.avatar_url}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`
       } else {
         avatarEl.textContent = username[0].toUpperCase()
       }
 
-      document.getElementById('viewerName').textContent    = '@' + username
-      document.getElementById('viewerTime').textContent    = formatTime(story.created_at)
-      document.getElementById('storyMediaImg').src         = story.media_url
-      document.getElementById('storyCaption').textContent  = story.caption || ''
-      document.getElementById('storyViews').textContent    = `👁 ${story.views_count || 0} views`
+      document.getElementById('viewerName').textContent = '@' + username
+      document.getElementById('viewerTime').textContent = formatTime(story.created_at)
+      document.getElementById('storyMediaImg').src = story.media_url
+      document.getElementById('storyCaption').textContent = story.caption || ''
+      document.getElementById('storyViews').textContent = `👁 ${story.views_count || 0} views`
 
       const bar = document.getElementById('storyProgressBar')
       bar.innerHTML = group.map((_, i) => `
@@ -700,14 +970,15 @@
 
       if (story.user_id !== currentUser.id) {
         await supabase.from('story_views').insert({
-          story_id: story.id, viewer_id: currentUser.id
+          story_id: story.id,
+          viewer_id: currentUser.id
         }).then(() => {
           supabase.from('stories').update({ views_count: (story.views_count || 0) + 1 }).eq('id', story.id)
         })
       }
     }
 
-    window.nextStory = function () {
+    window.nextStory = function() {
       clearTimeout(storyTimer)
       const group = allStories[currentStoryGroupIndex]
       if (currentStoryIndex < group.length - 1) {
@@ -719,7 +990,7 @@
       showStory()
     }
 
-    window.prevStory = function () {
+    window.prevStory = function() {
       clearTimeout(storyTimer)
       if (currentStoryIndex > 0) {
         currentStoryIndex--
@@ -730,11 +1001,12 @@
       showStory()
     }
 
-    window.closeStoryViewer = function () {
+    window.closeStoryViewer = function() {
       clearTimeout(storyTimer)
       document.getElementById('storyViewer').classList.remove('open')
     }
 
+    // ===== FEED =====
     async function loadFeed() {
       const feedEl = document.getElementById('feed')
       feedEl.innerHTML = '<div class="loader">Loading posts...</div>'
@@ -755,6 +1027,11 @@
 
       feedEl.innerHTML = posts.map(post => renderPost(post)).join('')
 
+      posts.forEach(post => {
+        subscribeToLikes(post.id)
+        subscribeToComments(post.id)
+      })
+
       document.querySelectorAll('.like-btn').forEach(btn =>
         btn.addEventListener('click', () => toggleLike(btn.dataset.id, btn))
       )
@@ -764,13 +1041,13 @@
     }
 
     function renderPost(post) {
-      const username   = post.profiles?.username || 'user'
-      const initial    = username[0].toUpperCase()
-      const timeAgo    = formatTime(post.created_at)
-      const imgHtml    = post.image_url ? `<img class="post-img" src="${post.image_url}" alt="post"/>` : ''
-      const avatarHtml = post.profiles?.avatar_url
-        ? `<img src="${post.profiles.avatar_url}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`
-        : initial
+      const username = post.profiles?.username || 'user'
+      const initial = username[0].toUpperCase()
+      const timeAgo = formatTime(post.created_at)
+      const imgHtml = post.image_url ? `<img class="post-img" src="${post.image_url}" alt="post"/>` : ''
+      const avatarHtml = post.profiles?.avatar_url ?
+        `<img src="${post.profiles.avatar_url}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>` :
+        initial
 
       return `
         <div class="post-card" id="post-${post.id}">
@@ -803,10 +1080,10 @@
         </div>`
     }
 
-    window.toggleComments = async function (postId) {
+    window.toggleComments = async function(postId) {
       const section = document.getElementById(`comments-${postId}`)
-      const btn     = document.querySelector(`.comment-toggle[data-id="${postId}"]`)
-      const isOpen  = section.classList.contains('open')
+      const btn = document.querySelector(`.comment-toggle[data-id="${postId}"]`)
+      const isOpen = section.classList.contains('open')
       section.classList.toggle('open')
       btn.classList.toggle('active')
       if (!isOpen) await loadComments(postId)
@@ -838,20 +1115,24 @@
       }).join('')
     }
 
-    window.sendComment = async function (postId, postOwnerId) {
-      const input   = document.getElementById(`cinput-${postId}`)
+    window.sendComment = async function(postId, postOwnerId) {
+      const input = document.getElementById(`cinput-${postId}`)
       const content = input.value.trim()
       if (!content) return
       input.value = ''
       const { error } = await supabase.from('comments').insert({
-        post_id: postId, user_id: currentUser.id, content
+        post_id: postId,
+        user_id: currentUser.id,
+        content
       })
       if (!error) {
         await loadComments(postId)
         if (postOwnerId !== currentUser.id) {
           await supabase.from('notifications').insert({
-            user_id: postOwnerId, actor_id: currentUser.id,
-            type: 'comment', post_id: postId
+            user_id: postOwnerId,
+            actor_id: currentUser.id,
+            type: 'comment',
+            post_id: postId
           })
         }
       }
@@ -861,15 +1142,15 @@
       if (e.key === 'Enter' && e.target.classList.contains('comment-input')) {
         e.target.nextElementSibling?.click()
       }
-      if (e.key === 'Escape')     closeStoryViewer()
+      if (e.key === 'Escape') closeStoryViewer()
       if (e.key === 'ArrowRight') nextStory()
-      if (e.key === 'ArrowLeft')  prevStory()
+      if (e.key === 'ArrowLeft') prevStory()
     })
 
     async function toggleLike(postId, btn) {
       const countSpan = btn.querySelector('.like-count')
-      const isLiked   = btn.classList.contains('liked')
-      const newCount  = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
+      const isLiked = btn.classList.contains('liked')
+      const newCount = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
       countSpan.textContent = newCount
       btn.classList.toggle('liked')
       await supabase.from('posts').update({ likes_count: newCount }).eq('id', postId)
@@ -877,16 +1158,18 @@
         const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single()
         if (post && post.user_id !== currentUser.id) {
           await supabase.from('notifications').insert({
-            user_id: post.user_id, actor_id: currentUser.id,
-            type: 'like', post_id: postId
+            user_id: post.user_id,
+            actor_id: currentUser.id,
+            type: 'like',
+            post_id: postId
           })
         }
       }
     }
 
-    window.createPost = async function () {
-      const text  = document.getElementById('post-text').value.trim()
-      const file  = document.getElementById('post-img').files[0]
+    window.createPost = async function() {
+      const text = document.getElementById('post-text').value.trim()
+      const file = document.getElementById('post-img').files[0]
       const msgEl = document.getElementById('post-msg')
       msgEl.className = 'msg'
       if (!text && !file) {
@@ -907,8 +1190,10 @@
         imageUrl = urlData.publicUrl
       }
       const { error } = await supabase.from('posts').insert({
-        user_id: currentUser.id, content: text,
-        image_url: imageUrl, likes_count: 0
+        user_id: currentUser.id,
+        content: text,
+        image_url: imageUrl,
+        likes_count: 0
       })
       if (error) {
         msgEl.className = 'msg error'
@@ -916,10 +1201,11 @@
         return
       }
       document.getElementById('post-text').value = ''
-      document.getElementById('post-img').value  = ''
+      document.getElementById('post-img').value = ''
       loadFeed()
     }
 
+    // ===== NOTIFICATIONS =====
     async function loadNotifications() {
       const { data: notifs } = await supabase
         .from('notifications')
@@ -928,7 +1214,7 @@
         .order('created_at', { ascending: false })
         .limit(20)
       const unread = (notifs || []).filter(n => !n.read).length
-      const badge  = document.getElementById('notifBadge')
+      const badge = document.getElementById('notifBadge')
       badge.textContent = unread
       badge.classList.toggle('show', unread > 0)
       const listEl = document.getElementById('notifList')
@@ -937,11 +1223,11 @@
         return
       }
       listEl.innerHTML = notifs.map(n => {
-        const actor   = n.actor?.username || 'Someone'
+        const actor = n.actor?.username || 'Someone'
         const initial = actor[0].toUpperCase()
-        const typeMsg = n.type === 'like'
-          ? `<span>@${actor}</span> liked your post ❤️`
-          : `<span>@${actor}</span> commented on your post 💬`
+        const typeMsg = n.type === 'like' ?
+          `<span>@${actor}</span> liked your post ❤️` :
+          `<span>@${actor}</span> commented on your post 💬`
         return `
           <div class="notif-item ${n.read ? '' : 'unread'}">
             <div class="notif-avatar">${initial}</div>
@@ -953,24 +1239,24 @@
       }).join('')
     }
 
-    window.toggleNotifDropdown = function () {
+    window.toggleNotifDropdown = function() {
       document.getElementById('notifDropdown').classList.toggle('open')
     }
 
-    window.markAllRead = async function () {
+    window.markAllRead = async function() {
       await supabase.from('notifications').update({ read: true }).eq('user_id', currentUser.id)
       loadNotifications()
     }
 
     document.addEventListener('click', (e) => {
       const dropdown = document.getElementById('notifDropdown')
-      const bell     = document.querySelector('.notif-bell')
+      const bell = document.querySelector('.notif-bell')
       if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
         dropdown.classList.remove('open')
       }
     })
 
-    window.logout = async function () {
+    window.logout = async function() {
       await supabase.auth.signOut()
       window.location.href = 'index.html'
     }
@@ -979,15 +1265,15 @@
       const t = document.getElementById('toast')
       t.textContent = msg
       t.classList.add('show')
-      setTimeout(() => t.classList.remove('show'), 2500)
+      setTimeout(() => t.classList.remove('show'), 3000)
     }
 
     function formatTime(dateStr) {
       const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000)
-      if (diff < 60)    return `${diff}s ago`
-      if (diff < 3600)  return `${Math.floor(diff/60)}m ago`
-      if (diff < 86400) return `${Math.floor(diff/3600)}h ago`
-      return `${Math.floor(diff/86400)}d ago`
+      if (diff < 60) return `${diff}s ago`
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+      return `${Math.floor(diff / 86400)}d ago`
     }
 
     init()
