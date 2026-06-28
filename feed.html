@@ -1150,11 +1150,18 @@
     async function toggleLike(postId, btn) {
       const countSpan = btn.querySelector('.like-count')
       const isLiked = btn.classList.contains('liked')
-      const newCount = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
-      countSpan.textContent = newCount
+      // Optimistic UI update
+      const optimisticCount = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
+      countSpan.textContent = optimisticCount
       btn.classList.toggle('liked')
-      await supabase.from('posts').update({ likes_count: newCount }).eq('id', postId)
-      if (!isLiked) {
+      // Safe server-side increment/decrement (no race condition)
+      const { error } = await supabase.rpc(isLiked ? 'decrement_likes' : 'increment_likes', { post_id: postId })
+      if (error) {
+        // Rollback on error
+        countSpan.textContent = parseInt(countSpan.textContent) + (isLiked ? 1 : -1)
+        btn.classList.toggle('liked')
+      }
+      if (!isLiked && !error) {
         const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single()
         if (post && post.user_id !== currentUser.id) {
           await supabase.from('notifications').insert({

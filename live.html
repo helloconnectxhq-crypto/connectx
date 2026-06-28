@@ -13,6 +13,7 @@
       flex-direction: column;
       background: #000;
     }
+    
     .live-header {
       padding: 12px 16px;
       background: rgba(0,0,0,0.8);
@@ -21,14 +22,24 @@
       justify-content: space-between;
       z-index: 10;
     }
+    
     .live-badge {
       color: #FF4444;
       font-weight: 800;
       font-size: 16px;
       animation: pulse 1s infinite;
     }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .live-viewers { color: #fff; font-size: 13px; }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .live-viewers {
+      color: #fff;
+      font-size: 13px;
+    }
+    
     .video-container {
       flex: 1;
       display: flex;
@@ -37,18 +48,33 @@
       background: #0D0D0D;
       position: relative;
     }
-    .video-container video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-    .video-container .remote-video { width: 100%; height: 100%; object-fit: contain; }
+    
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+    
+    .video-container .remote-video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
     .video-container .local-video {
       position: absolute;
-      bottom: 80px; right: 16px;
-      width: 120px; height: 160px;
+      bottom: 80px;
+      right: 16px;
+      width: 120px;
+      height: 160px;
       border-radius: 12px;
       border: 2px solid #6C63FF;
       object-fit: cover;
       z-index: 5;
       background: #1A1A2E;
     }
+    
     .live-controls {
       padding: 16px;
       background: rgba(0,0,0,0.9);
@@ -57,66 +83,176 @@
       justify-content: center;
       gap: 20px;
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       z-index: 10;
     }
+    
     .control-btn {
-      width: 56px; height: 56px;
-      border-radius: 50%; border: none;
-      font-size: 24px; cursor: pointer;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
       transition: transform 0.2s, background 0.2s;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .control-btn:active { transform: scale(0.9); }
-    .control-btn.start { background: #FF4444; color: #fff; }
-    .control-btn.start:hover { background: #CC0000; }
-    .control-btn.stop { background: #444; color: #fff; }
-    .control-btn.stop:hover { background: #666; }
-    .control-btn.mic { background: rgba(255,255,255,0.1); color: #fff; }
-    .control-btn.mic.muted { background: #FF4444; }
-    .control-btn.cam { background: rgba(255,255,255,0.1); color: #fff; }
-    .control-btn.cam.off { background: #FF4444; }
-    .control-btn.share { background: #6C63FF; color: #fff; }
+    
+    .control-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .control-btn.start {
+      background: #FF4444;
+      color: #fff;
+    }
+    
+    .control-btn.start:hover {
+      background: #CC0000;
+    }
+    
+    .control-btn.stop {
+      background: #444;
+      color: #fff;
+    }
+    
+    .control-btn.stop:hover {
+      background: #666;
+    }
+    
+    .control-btn.mic {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    
+    .control-btn.mic.muted {
+      background: #FF4444;
+    }
+    
+    .control-btn.cam {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    
+    .control-btn.cam.off {
+      background: #FF4444;
+    }
+    
+    .control-btn.share {
+      background: #6C63FF;
+      color: #fff;
+    }
+    
     .live-chat {
       position: absolute;
-      bottom: 100px; left: 16px;
-      width: 320px; max-height: 300px;
+      bottom: 100px;
+      left: 16px;
+      width: 320px;
+      max-height: 300px;
       background: rgba(0,0,0,0.8);
-      border-radius: 16px; padding: 12px;
-      display: flex; flex-direction: column; gap: 8px;
-      backdrop-filter: blur(10px); z-index: 8;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      z-index: 8;
     }
+    
     .live-chat-messages {
-      flex: 1; max-height: 200px; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 4px;
+      flex: 1;
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .chat-msg { font-size: 13px; color: #fff; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,0.05); }
-    .chat-msg .username { color: #6C63FF; font-weight: 700; }
-    .live-chat-input { display: flex; gap: 8px; margin-top: 8px; }
+    
+    .chat-msg {
+      font-size: 13px;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .chat-msg .username {
+      color: #6C63FF;
+      font-weight: 700;
+    }
+    
+    .live-chat-input {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
     .live-chat-input input {
-      flex: 1; padding: 8px 12px; border-radius: 20px;
-      border: 1px solid #333; background: rgba(255,255,255,0.05);
-      color: #fff; font-size: 13px; outline: none;
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #333;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
     }
-    .live-chat-input input:focus { border-color: #6C63FF; }
+    
+    .live-chat-input input:focus {
+      border-color: #6C63FF;
+    }
+    
     .live-chat-input button {
-      padding: 8px 16px; border-radius: 20px; border: none;
-      background: #6C63FF; color: #fff; font-weight: 600; cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #6C63FF;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
     }
+    
     .share-link-btn {
-      padding: 8px 16px; border-radius: 12px; border: none;
-      background: #6C63FF; color: #fff; font-weight: 600;
-      cursor: pointer; font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: none;
+      background: #6C63FF;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
     }
+    
     @media (max-width: 640px) {
-      .live-chat { width: 90%; left: 5%; bottom: 80px; }
-      .video-container .local-video { width: 80px; height: 110px; bottom: 80px; right: 8px; }
-      .control-btn { width: 44px; height: 44px; font-size: 18px; }
+      .live-chat {
+        width: 90%;
+        left: 5%;
+        bottom: 80px;
+      }
+      
+      .video-container .local-video {
+        width: 80px;
+        height: 110px;
+        bottom: 80px;
+        right: 8px;
+      }
+      
+      .control-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
+
   <div class="live-container">
+    <!-- Header -->
     <div class="live-header">
       <div>
         <span class="live-badge">● LIVE</span>
@@ -128,11 +264,16 @@
       </div>
     </div>
 
+    <!-- Video Container -->
     <div class="video-container" id="videoContainer">
+      <!-- Remote Video (Streamer) -->
       <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
-      <video class="local-video"  id="localVideo"  autoplay playsinline muted></video>
+      
+      <!-- Local Video (Self) -->
+      <video class="local-video" id="localVideo" autoplay playsinline muted></video>
     </div>
 
+    <!-- Live Chat -->
     <div class="live-chat" id="liveChat">
       <div class="live-chat-messages" id="chatMessages">
         <div class="chat-msg"><span class="username">System</span>: Welcome to the live stream!</div>
@@ -143,35 +284,39 @@
       </div>
     </div>
 
+    <!-- Controls -->
     <div class="live-controls">
-      <button class="control-btn mic"   id="micBtn"   onclick="toggleMic()">🎤</button>
-      <button class="control-btn cam"   id="camBtn"   onclick="toggleCam()">📷</button>
+      <button class="control-btn mic" id="micBtn" onclick="toggleMic()">🎤</button>
+      <button class="control-btn cam" id="camBtn" onclick="toggleCam()">📷</button>
       <button class="control-btn start" id="startBtn" onclick="startLive()">🔴 Start</button>
-      <button class="control-btn stop"  id="stopBtn"  onclick="stopLive()" style="display:none;">⏹ Stop</button>
-      <button class="control-btn share"              onclick="shareLiveLink()">📤</button>
+      <button class="control-btn stop" id="stopBtn" onclick="stopLive()" style="display:none;">⏹ Stop</button>
+      <button class="control-btn share" onclick="shareLiveLink()">📤</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script type="module">
     import { supabase } from './supabase.js'
-
-    let currentUser  = null
-    let peer         = null
-    let stream       = null
-    let isLive       = false
-
-    // FIX: separate media calls from data connections
-    let mediaCalls   = []   // PeerJS MediaConnection objects (for streaming video)
-    let dataConns    = []   // PeerJS DataConnection objects (for chat messages)
-    let viewers      = new Set()
-
+    
+    let currentUser = null
+    let peer = null
+    let stream = null
+    let isLive = false
+    let dataConns = []    // DataConnection — for chat/likes (.send())
+    let mediaCalls = []   // MediaConnection — for video (.close())
+    let viewers = new Set()
+    
+    // Initialize
     async function init() {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { window.location.href = 'index.html'; return }
+      if (!session) {
+        window.location.href = 'index.html'
+        return
+      }
       currentUser = session.user
-
-      peer = new Peer(currentUser.id + '_live_' + Date.now(), {
+      
+      // Initialize PeerJS
+      peer = new Peer(currentUser.id, {
         config: {
           iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
@@ -179,219 +324,223 @@
           ]
         }
       })
-
-      peer.on('open', (id) => console.log('Peer ready:', id))
-
-      // Handle incoming data connections (chat from viewers)
+      
+      peer.on('open', (id) => {
+        console.log('Peer ID:', id)
+      })
+      
       peer.on('connection', (conn) => {
-        dataConns.push(conn)
-        conn.on('data', (data) => handlePeerData(data))
-        conn.on('close', () => {
-          dataConns = dataConns.filter(c => c !== conn)
+        conn.on('data', (data) => {
+          handlePeerData(data, conn)
         })
       })
-
-      // Handle incoming calls (viewers joining stream)
+      
       peer.on('call', (call) => {
-        // Streamer answers with their stream
-        if (stream) {
-          call.answer(stream)
-        } else {
-          call.answer()
-        }
+        call.answer()
         call.on('stream', (remoteStream) => {
-          // If we're a viewer, show the remote stream
-          const remoteVideo = document.getElementById('remoteVideo')
-          remoteVideo.srcObject = remoteStream
-        })
-        mediaCalls.push(call)
-        call.on('close', () => {
-          mediaCalls = mediaCalls.filter(c => c !== call)
+          document.getElementById('remoteVideo').srcObject = remoteStream
+          document.getElementById('remoteVideo').play()
         })
       })
-
+      
+      // Listen for live events
       subscribeToLiveEvents()
     }
-
+    
+    // Start Live Stream
     window.startLive = async function() {
       try {
+        // Get user media
         stream = await navigator.mediaDevices.getUserMedia({
           video: { width: 1280, height: 720 },
           audio: true
         })
-
+        
+        // Show local video
         document.getElementById('localVideo').srcObject = stream
+        
+        // Update UI
         document.getElementById('startBtn').style.display = 'none'
-        document.getElementById('stopBtn').style.display  = 'flex'
+        document.getElementById('stopBtn').style.display = 'flex'
         isLive = true
-
+        
+        // Notify Supabase that live is active
         await supabase.from('live_streams').insert({
           streamer_id: currentUser.id,
-          peer_id: peer.id,
           status: 'active',
           started_at: new Date().toISOString()
         })
-
+        
         showToast('🔴 Live stream started!')
+        updateViewerCount()
+        
+        // Listen for viewers
         listenForViewers()
+        
       } catch (err) {
         showToast('❌ Cannot start: ' + err.message)
       }
     }
-
+    
+    // Stop Live Stream
     window.stopLive = async function() {
       if (stream) {
         stream.getTracks().forEach(track => track.stop())
         stream = null
       }
-
-      // Close all media calls and data connections
-      mediaCalls.forEach(call => call.close())
+      
+      // Close all connections
       dataConns.forEach(conn => conn.close())
+      mediaCalls.forEach(call => call.close())
+      dataConns = []
       mediaCalls = []
-      dataConns  = []
       viewers.clear()
-
-      document.getElementById('localVideo').srcObject  = null
+      
+      document.getElementById('localVideo').srcObject = null
       document.getElementById('remoteVideo').srcObject = null
       document.getElementById('startBtn').style.display = 'flex'
-      document.getElementById('stopBtn').style.display  = 'none'
+      document.getElementById('stopBtn').style.display = 'none'
       isLive = false
-      updateViewerCount()
-
+      
+      // Update Supabase
       await supabase.from('live_streams')
         .update({ status: 'ended', ended_at: new Date().toISOString() })
         .eq('streamer_id', currentUser.id)
         .eq('status', 'active')
-
+      
       showToast('📹 Live stream ended')
     }
-
+    
+    // Listen for viewers
     function listenForViewers() {
-      supabase.channel('live-viewers-' + currentUser.id)
+      supabase.channel('live-viewers')
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
           table: 'live_viewers',
           filter: `streamer_id=eq.${currentUser.id}`
         }, (payload) => {
-          const viewerPeerId = payload.new.viewer_peer_id
-          const viewerId     = payload.new.viewer_id
-          if (viewerId !== currentUser.id && viewerPeerId) {
+          const viewerId = payload.new.viewer_id
+          if (viewerId !== currentUser.id) {
             viewers.add(viewerId)
             updateViewerCount()
-
-            // FIX: call the viewer with the media stream (MediaConnection)
-            if (stream && peer) {
-              const call = peer.call(viewerPeerId, stream)
-              mediaCalls.push(call)
-
-              // FIX: open a separate DataConnection for chat
-              const conn = peer.connect(viewerPeerId)
-              conn.on('open', () => dataConns.push(conn))
-              conn.on('close', () => {
-                dataConns = dataConns.filter(c => c !== conn)
-                viewers.delete(viewerId)
-                updateViewerCount()
-              })
-            }
+            
+            // Video call to viewer
+            const call = peer.call(viewerId, stream)
+            mediaCalls.push(call)
+            // Separate data connection for chat
+            const dataConn = peer.connect(viewerId)
+            dataConn.on('open', () => dataConns.push(dataConn))
           }
         })
         .subscribe()
     }
-
+    
+    // Update viewer count
     function updateViewerCount() {
       document.getElementById('viewerCount').textContent = `👁 ${viewers.size} watching`
     }
-
-    function handlePeerData(data) {
+    
+    // Handle peer data (chat messages, likes)
+    function handlePeerData(data, conn) {
       if (data.type === 'chat') {
         addChatMessage(data.username, data.message)
       } else if (data.type === 'like') {
         showToast(`❤️ ${data.username} liked the stream!`)
       }
     }
-
-    // FIX: send only on DataConnections, not MediaConnections
+    
+    // Send live message
     window.sendLiveMessage = function() {
-      const input   = document.getElementById('chatInput')
+      const input = document.getElementById('chatInput')
       const message = input.value.trim()
-      if (!message) return
+      if (!message || !isLive) return
+      
       input.value = ''
-
-      const username = currentUser.user_metadata?.username || 'Streamer'
-      addChatMessage(username, message)
-
-      if (isLive) {
-        dataConns.forEach(conn => {
-          if (conn.open) {
-            conn.send({ type: 'chat', username, message })
-          }
+      
+      // Send to all viewers via data connections
+      dataConns.forEach(conn => {
+        conn.send({
+          type: 'chat',
+          username: currentUser.username || 'User',
+          message: message
         })
-      }
+      })
+      
+      addChatMessage(currentUser.username || 'You', message)
     }
-
+    
+    // Add chat message
     function addChatMessage(username, message) {
       const container = document.getElementById('chatMessages')
       const div = document.createElement('div')
       div.className = 'chat-msg'
-      div.innerHTML = `<span class="username">${escHtml(username)}</span>: ${escHtml(message)}`
+      div.innerHTML = `<span class="username">${username}</span>: ${message}`
       container.appendChild(div)
       container.scrollTop = container.scrollHeight
     }
-
-    function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    }
-
+    
+    // Toggle microphone
     window.toggleMic = function() {
       if (!stream) return
-      const track = stream.getAudioTracks()[0]
-      if (track) {
-        track.enabled = !track.enabled
-        document.getElementById('micBtn').classList.toggle('muted', !track.enabled)
+      const audioTrack = stream.getAudioTracks()[0]
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled
+        document.getElementById('micBtn').classList.toggle('muted')
       }
     }
-
+    
+    // Toggle camera
     window.toggleCam = function() {
       if (!stream) return
-      const track = stream.getVideoTracks()[0]
-      if (track) {
-        track.enabled = !track.enabled
-        document.getElementById('camBtn').classList.toggle('off', !track.enabled)
+      const videoTrack = stream.getVideoTracks()[0]
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled
+        document.getElementById('camBtn').classList.toggle('off')
       }
     }
-
+    
+    // Share live link
     window.shareLiveLink = function() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
+      const url = window.location.href
+      navigator.clipboard.writeText(url).then(() => {
         showToast('🔗 Link copied! Share with friends to watch')
       })
     }
-
+    
+    // Subscribe to live events
     function subscribeToLiveEvents() {
+      // Listen for new live streams
       supabase.channel('live-events')
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
           table: 'live_streams'
         }, (payload) => {
-          if (payload.new.streamer_id !== currentUser.id) {
-            showToast(`🔴 Someone is now live!`)
-          }
+          // Show notification when someone goes live
+          showToast(`🔴 ${payload.new.streamer_id} is now live!`)
         })
         .subscribe()
     }
-
+    
+    // Show toast
     function showToast(msg) {
       const existing = document.querySelector('.toast')
       if (existing) existing.remove()
+      
       const toast = document.createElement('div')
-      toast.className = 'toast show'
+      toast.className = 'toast'
       toast.textContent = msg
+      toast.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px;
+        border-radius: 12px; font-size: 14px; z-index: 9999;
+        backdrop-filter: blur(10px); border: 1px solid #333;
+      `
       document.body.appendChild(toast)
       setTimeout(() => toast.remove(), 3000)
     }
-
+    
     init()
   </script>
 </body>
