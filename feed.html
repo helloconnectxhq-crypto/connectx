@@ -620,6 +620,85 @@
       display: block;
     }
 
+    /* ===== HAMBURGER ===== */
+    .hamburger-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 6px; display: flex; flex-direction: column;
+      gap: 5px; justify-content: center;
+    }
+    .hamburger-btn span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    /* ===== SIDE DRAWER ===== */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 200; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; backdrop-filter: blur(2px);
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    .side-drawer {
+      position: fixed; top: 0; left: -280px; bottom: 0;
+      width: 280px; background: var(--surface);
+      border-right: 1px solid var(--border);
+      z-index: 201; display: flex; flex-direction: column;
+      transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+      padding-top: env(safe-area-inset-top);
+    }
+    .side-drawer.open { left: 0; }
+
+    .drawer-header {
+      padding: 28px 20px 20px;
+      display: flex; align-items: center; gap: 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.08));
+    }
+    .drawer-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: #fff;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .drawer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .drawer-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .drawer-username { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+
+    .drawer-nav {
+      flex: 1; padding: 12px 0; overflow-y: auto;
+    }
+    .drawer-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; color: var(--text-sub);
+      font-size: 15px; font-weight: 600;
+      text-decoration: none; transition: background 0.2s, color 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .drawer-item:hover { background: var(--elevated); color: var(--text); }
+    .drawer-item.active {
+      color: var(--violet);
+      background: rgba(108,99,255,0.1);
+      border-left-color: var(--violet);
+    }
+    .drawer-item span { font-size: 15px; }
+
+    .drawer-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    .drawer-logout {
+      width: 100%; padding: 12px;
+      border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(255,82,82,0.1); color: #FF5252;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .drawer-logout:hover { background: rgba(255,82,82,0.2); }
+
     /* ===== MOBILE ===== */
     @media screen and (max-width: 768px) {
       .stories-bar { padding: 10px 12px; gap: 12px; min-height: 80px; }
@@ -628,6 +707,8 @@
       .story-ring-inner { font-size: 16px; }
       .story-username { font-size: 9px; max-width: 52px; }
       .add-story-btn { width: 20px; height: 20px; font-size: 12px; bottom: -1px; right: -1px; }
+      .bottom-nav { display: flex !important; }
+      .feed-page { padding-bottom: 80px; }
     }
     @media screen and (max-width: 480px) {
       .stories-bar { padding: 8px 10px; gap: 10px; min-height: 72px; }
@@ -645,22 +726,68 @@
 </head>
 <body>
 
+  <!-- ===== SIDE DRAWER ===== -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <div class="drawer-avatar" id="drawerAvatar">U</div>
+      <div>
+        <div class="drawer-name" id="drawerName">ConnectX</div>
+        <div class="drawer-username" id="drawerUsername">@user</div>
+      </div>
+    </div>
+    <nav class="drawer-nav">
+      <a href="feed.html"     class="drawer-item active">🏠 <span>Home Feed</span></a>
+      <a href="profile.html"  class="drawer-item">👤 <span>My Profile</span></a>
+      <a href="messages.html" class="drawer-item">💬 <span>Messages</span></a>
+      <a href="reels.html"    class="drawer-item">🎬 <span>Reels</span></a>
+      <a href="live.html"     class="drawer-item">🔴 <span>Go Live</span></a>
+      <a href="search.html"   class="drawer-item">🔍 <span>Search</span></a>
+    </nav>
+    <div class="drawer-footer">
+      <button class="drawer-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar">
-    <div class="nav-logo">ConnectX</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="hamburger-btn" onclick="openDrawer()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-logo">ConnectX</div>
+    </div>
     <div class="nav-actions">
-      <span id="nav-username" style="color:#8A8A9A;font-size:14px;"></span>
-      <a href="messages.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">💬 Messages</a>
-      <a href="reels.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🎬 Reels</a>
-      <a href="live.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔴 Live</a>
-      <a href="search.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔍 Search</a>
-      <a href="profile.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">👤 Profile</a>
+      <span id="nav-username" style="color:#8A8A9A;font-size:13px;"></span>
       <div class="notif-bell" onclick="toggleNotifDropdown()">
         🔔
         <div class="notif-badge" id="notifBadge">0</div>
       </div>
-      <button class="nav-btn" onclick="logout()">Logout</button>
     </div>
+  </nav>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <nav class="bottom-nav">
+    <a href="feed.html"     class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="search.html"   class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span>Search</span>
+    </a>
+    <a href="reels.html"    class="nav-item">
+      <span class="nav-icon">🎬</span>
+      <span>Reels</span>
+    </a>
+    <a href="messages.html" class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Messages</span>
+    </a>
+    <a href="profile.html"  class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
   </nav>
 
   <!-- ===== NOTIFICATIONS ===== -->
@@ -762,6 +889,17 @@
 
       currentProfile = data
       document.getElementById('nav-username').textContent = '@' + (data?.username || '')
+
+      // Update side drawer
+      const uname = data?.username || 'User'
+      document.getElementById('drawerName').textContent = uname
+      document.getElementById('drawerUsername').textContent = '@' + uname
+      const drawerAvatar = document.getElementById('drawerAvatar')
+      if (data?.avatar_url) {
+        drawerAvatar.innerHTML = `<img src="${data.avatar_url}" alt="${uname}"/>`
+      } else {
+        drawerAvatar.textContent = uname[0].toUpperCase()
+      }
 
       const myAvatar = document.getElementById('myStoryAvatar')
       if (data?.avatar_url) {
@@ -1150,18 +1288,11 @@
     async function toggleLike(postId, btn) {
       const countSpan = btn.querySelector('.like-count')
       const isLiked = btn.classList.contains('liked')
-      // Optimistic UI update
-      const optimisticCount = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
-      countSpan.textContent = optimisticCount
+      const newCount = parseInt(countSpan.textContent) + (isLiked ? -1 : 1)
+      countSpan.textContent = newCount
       btn.classList.toggle('liked')
-      // Safe server-side increment/decrement (no race condition)
-      const { error } = await supabase.rpc(isLiked ? 'decrement_likes' : 'increment_likes', { post_id: postId })
-      if (error) {
-        // Rollback on error
-        countSpan.textContent = parseInt(countSpan.textContent) + (isLiked ? 1 : -1)
-        btn.classList.toggle('liked')
-      }
-      if (!isLiked && !error) {
+      await supabase.from('posts').update({ likes_count: newCount }).eq('id', postId)
+      if (!isLiked) {
         const { data: post } = await supabase.from('posts').select('user_id').eq('id', postId).single()
         if (post && post.user_id !== currentUser.id) {
           await supabase.from('notifications').insert({
@@ -1282,6 +1413,20 @@
       if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
       return `${Math.floor(diff / 86400)}d ago`
     }
+
+    // ===== DRAWER =====
+    window.openDrawer = function() {
+      document.getElementById('sideDrawer').classList.add('open')
+      document.getElementById('drawerOverlay').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+    window.closeDrawer = function() {
+      document.getElementById('sideDrawer').classList.remove('open')
+      document.getElementById('drawerOverlay').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+    // Close drawer on ESC
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer() })
 
     init()
   </script>
