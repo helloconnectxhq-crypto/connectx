@@ -1167,10 +1167,40 @@
       const feedEl = document.getElementById('feed')
       feedEl.innerHTML = '<div class="loader">Loading posts...</div>'
 
-      const { data: posts } = await supabase
+      let { data: posts, error } = await supabase
         .from('posts')
         .select('*, profiles(username, avatar_url)')
         .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('loadFeed join error:', error)
+        // Fallback: fetch posts without the profiles join, then fetch profiles separately
+        const fallback = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (fallback.error) {
+          feedEl.innerHTML = `
+            <div class="empty-state">
+              <div class="icon">⚠️</div>
+              <p>Couldn't load posts: ${fallback.error.message}</p>
+            </div>`
+          return
+        }
+
+        posts = fallback.data || []
+        const userIds = [...new Set(posts.map(p => p.user_id))]
+        if (userIds.length) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, username, avatar_url')
+            .in('id', userIds)
+          const profileMap = {}
+          ;(profilesData || []).forEach(p => profileMap[p.id] = p)
+          posts.forEach(p => p.profiles = profileMap[p.user_id] || null)
+        }
+      }
 
       if (!posts || posts.length === 0) {
         feedEl.innerHTML = `
