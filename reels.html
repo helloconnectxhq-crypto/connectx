@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>ConnectX – Reels</title>
   <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <link rel="icon" href="favicon.ico" sizes="any"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#000000"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="stylesheet" href="style.css"/>
@@ -606,15 +611,47 @@
 </head>
 <body>
 
+  <!-- ===== SIDE DRAWER ===== -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <div class="drawer-avatar" id="drawerAvatar">U</div>
+      <div>
+        <div class="drawer-name" id="drawerName">ConnectX</div>
+        <div class="drawer-username" id="drawerUsername">@user</div>
+      </div>
+    </div>
+    <nav class="drawer-nav">
+      <a href="feed.html"     class="drawer-item">🏠 <span>Home Feed</span></a>
+      <a href="profile.html"  class="drawer-item">👤 <span>My Profile</span></a>
+      <a href="messages.html" class="drawer-item">💬 <span>Messages</span></a>
+      <a href="reels.html"    class="drawer-item active">🎬 <span>Reels</span></a>
+      <a href="live.html"     class="drawer-item">🔴 <span>Go Live</span></a>
+      <a href="search.html"   class="drawer-item">🔍 <span>Search</span></a>
+    </nav>
+    <div class="drawer-footer">
+      <button class="drawer-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
   <!-- Top Nav -->
   <div class="reels-nav">
-    <a href="feed.html" class="back-btn">←</a>
+    <button class="hamburger-btn on-dark" onclick="openDrawer()" aria-label="Menu" style="position:relative;top:0;left:0;background:rgba(0,0,0,0.4);border-radius:10px;width:38px;height:38px;">
+      <span></span><span></span><span></span>
+    </button>
     <div class="reels-nav-title">🎬 Reels</div>
     <div class="reels-nav-actions">
-      <a href="feed.html">🏠</a>
       <button class="upload-btn" onclick="openUpload()">＋</button>
     </div>
   </div>
+
+  <nav class="bottom-nav" style="z-index:50;">
+    <a href="feed.html"     class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+    <a href="search.html"   class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+    <a href="reels.html"    class="nav-item active"><span class="nav-icon">🎬</span><span>Reels</span></a>
+    <a href="messages.html" class="nav-item"><span class="nav-icon">💬</span><span>Messages</span></a>
+    <a href="profile.html"  class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+  </nav>
 
   <!-- Reels Container -->
   <div class="reels-container" id="reelsContainer">
@@ -679,9 +716,30 @@
         .eq('id', currentUser.id).single()
       currentProfile = data
 
+      if (data) {
+        const uname = data.username || 'User'
+        document.getElementById('drawerName').textContent = uname
+        document.getElementById('drawerUsername').textContent = '@' + uname
+        const da = document.getElementById('drawerAvatar')
+        if (data.avatar_url) { da.innerHTML = `<img src="${data.avatar_url}" alt="${uname}"/>` }
+        else { da.textContent = uname[0].toUpperCase() }
+      }
+
       await loadFollowing()
       await loadReels()
     }
+
+    window.openDrawer = function() {
+      document.getElementById('sideDrawer').classList.add('open')
+      document.getElementById('drawerOverlay').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+    window.closeDrawer = function() {
+      document.getElementById('sideDrawer').classList.remove('open')
+      document.getElementById('drawerOverlay').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer() })
 
     async function loadFollowing() {
       const { data } = await supabase

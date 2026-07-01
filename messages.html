@@ -6,6 +6,11 @@
   <title>ConnectX – Messages</title>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#6C63FF"/>
+  <link rel="icon" href="favicon.ico" sizes="any"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#6C63FF"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="stylesheet" href="style.css"/>
   <style>
@@ -139,14 +144,47 @@
 </head>
 <body>
 
+  <!-- ===== SIDE DRAWER ===== -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <div class="drawer-avatar" id="drawerAvatar">U</div>
+      <div>
+        <div class="drawer-name" id="drawerName">ConnectX</div>
+        <div class="drawer-username" id="drawerUsername">@user</div>
+      </div>
+    </div>
+    <nav class="drawer-nav">
+      <a href="feed.html"     class="drawer-item">🏠 <span>Home Feed</span></a>
+      <a href="profile.html"  class="drawer-item">👤 <span>My Profile</span></a>
+      <a href="messages.html" class="drawer-item active">💬 <span>Messages</span></a>
+      <a href="reels.html"    class="drawer-item">🎬 <span>Reels</span></a>
+      <a href="live.html"     class="drawer-item">🔴 <span>Go Live</span></a>
+      <a href="search.html"   class="drawer-item">🔍 <span>Search</span></a>
+    </nav>
+    <div class="drawer-footer">
+      <button class="drawer-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
   <nav class="navbar">
-    <div class="nav-logo">ConnectX</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="hamburger-btn" onclick="openDrawer()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-logo">ConnectX</div>
+    </div>
     <div class="nav-actions">
-      <a href="feed.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🏠 Feed</a>
-      <a href="search.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">🔍 Search</a>
-      <a href="profile.html" style="color:var(--text-sub);font-size:13px;font-weight:600;margin-right:8px;">👤 Profile</a>
       <button class="nav-btn" onclick="logout()">Logout</button>
     </div>
+  </nav>
+
+  <nav class="bottom-nav">
+    <a href="feed.html"     class="nav-item"><span class="nav-icon">🏠</span><span>Home</span></a>
+    <a href="search.html"   class="nav-item"><span class="nav-icon">🔍</span><span>Search</span></a>
+    <a href="reels.html"    class="nav-item"><span class="nav-icon">🎬</span><span>Reels</span></a>
+    <a href="messages.html" class="nav-item active"><span class="nav-icon">💬</span><span>Messages</span></a>
+    <a href="profile.html"  class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
   </nav>
 
   <div class="msg-layout">
@@ -248,6 +286,16 @@
 
       const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
       currentProfile = data
+
+      const uname = data?.username || 'User'
+      document.getElementById('drawerName').textContent = uname
+      document.getElementById('drawerUsername').textContent = '@' + uname
+      const drawerAvatar = document.getElementById('drawerAvatar')
+      if (data?.avatar_url) {
+        drawerAvatar.innerHTML = `<img src="${data.avatar_url}" alt="${uname}"/>`
+      } else {
+        drawerAvatar.textContent = uname[0].toUpperCase()
+      }
 
       loadConversations()
       listenForCalls()
@@ -609,6 +657,18 @@
     function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500) }
     function formatTime(dateStr) { const diff=Math.floor((Date.now()-new Date(dateStr))/1000); if(diff<60)return`${diff}s ago`; if(diff<3600)return`${Math.floor(diff/60)}m ago`; if(diff<86400)return`${Math.floor(diff/3600)}h ago`; return`${Math.floor(diff/86400)}d ago` }
     function formatChatTime(dateStr) { const d=new Date(dateStr); return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) }
+
+    window.openDrawer = function() {
+      document.getElementById('sideDrawer').classList.add('open')
+      document.getElementById('drawerOverlay').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+    window.closeDrawer = function() {
+      document.getElementById('sideDrawer').classList.remove('open')
+      document.getElementById('drawerOverlay').classList.remove('open')
+      document.body.style.overflow = ''
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer() })
 
     init()
   </script>
