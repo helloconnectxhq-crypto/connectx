@@ -345,7 +345,7 @@
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://connectx-psi.vercel.app/index.html'
+        redirectTo: 'https://connectx-psi.vercel.app/reset-password.html'
       })
 
       if (error) {
