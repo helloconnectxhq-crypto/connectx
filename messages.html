@@ -270,6 +270,7 @@
     let currentProfile = null
     let activeChat = null
     let conversations = []
+    let onlineUsers = new Set()
     let mediaRecorder = null
     let audioChunks = []
     let recInterval = null
@@ -299,6 +300,30 @@
 
       loadConversations()
       listenForCalls()
+
+      // ===== REAL ONLINE PRESENCE =====
+      const presenceChannel = supabase.channel('online-users', {
+        config: { presence: { key: currentUser.id } }
+      })
+      presenceChannel
+        .on('presence', { event: 'sync' }, () => {
+          const state = presenceChannel.presenceState()
+          onlineUsers = new Set(Object.keys(state))
+          updateOnlineDots()
+        })
+        .on('presence', { event: 'join' }, ({ key }) => {
+          onlineUsers.add(key)
+          updateOnlineDots()
+        })
+        .on('presence', { event: 'leave' }, ({ key }) => {
+          onlineUsers.delete(key)
+          updateOnlineDots()
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await presenceChannel.track({ user_id: currentUser.id, online_at: new Date().toISOString() })
+          }
+        })
 
       // Real-time conversation list update
       supabase.channel('conv-updates-' + currentUser.id)
@@ -448,7 +473,7 @@
         const preview = msg.media_type==='voice'?'🎤 Voice':msg.media_type==='file'?'📎 File':msg.media_type==='image'?'📷 Photo':(msg.content||'')
         return `
           <div class="conv-item ${activeChat?.id===u.id?'active':''}" onclick="openChat('${u.id}','${u.username}','${u.full_name||u.username}','${u.avatar_url||''}')">
-            <div class="conv-avatar">${avatarHtml}<div class="online-dot"></div></div>
+            <div class="conv-avatar" data-user-id="${conv.id}">${avatarHtml}<div class="online-dot" style="display:none;"></div></div>
             <div class="conv-info">
               <div class="conv-name">${u.full_name||u.username}</div>
               <div class="conv-preview">${preview}</div>
@@ -463,6 +488,23 @@
       renderConversations(conversations.filter(c => c.user.username?.toLowerCase().includes(q.toLowerCase()) || c.user.full_name?.toLowerCase().includes(q.toLowerCase())))
     }
 
+    // ===== REAL ONLINE/OFFLINE STATUS =====
+    function updateOnlineDots() {
+      document.querySelectorAll('.conv-avatar[data-user-id]').forEach(el => {
+        const uid = el.dataset.userId
+        const dot = el.querySelector('.online-dot')
+        if (dot) dot.style.display = onlineUsers.has(uid) ? 'block' : 'none'
+      })
+      // Update chat header status if chat is open
+      if (activeChat) {
+        const statusEl = document.getElementById('chatHeaderStatus')
+        if (statusEl) {
+          statusEl.textContent = onlineUsers.has(activeChat.id) ? '🟢 Online' : '⚫ Offline'
+          statusEl.style.color = onlineUsers.has(activeChat.id) ? 'var(--success)' : 'var(--text-sub)'
+        }
+      }
+    }
+
     window.openChat = async function (userId, username, fullName, avatarUrl) {
       activeChat = { id: userId, username, fullName, avatarUrl }
       document.getElementById('chatArea').classList.add('mobile-active')
@@ -475,6 +517,13 @@
       avatarEl.innerHTML = avatarUrl ? `<img src="${avatarUrl}" alt="${username}" style="width:100%;height:100%;object-fit:cover;"/>` : (username||'U')[0].toUpperCase()
       document.getElementById('chatHeaderName').textContent = fullName || username
 
+      // Real online status
+      const statusEl = document.getElementById('chatHeaderStatus')
+      if (statusEl) {
+        statusEl.textContent = onlineUsers.has(userId) ? '🟢 Online' : '⚫ Offline'
+        statusEl.style.color = onlineUsers.has(userId) ? 'var(--success)' : 'var(--text-sub)'
+      }
+
       await supabase.from('messages').update({ read: true }).eq('sender_id', userId).eq('receiver_id', currentUser.id)
       loadMessages()
       subscribeToMessages()
@@ -486,11 +535,27 @@
       const container = document.getElementById('messagesContainer')
       container.innerHTML = '<div style="text-align:center;color:var(--text-sub);padding:20px;">Loading...</div>'
 
-      const { data: msgs } = await supabase
+      let { data: msgs, error } = await supabase
         .from('messages')
         .select('*, sender:profiles!messages_sender_id_fkey(username,avatar_url)')
         .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activeChat.id}),and(sender_id.eq.${activeChat.id},receiver_id.eq.${currentUser.id})`)
         .order('created_at', { ascending: true })
+
+      // Fallback if FK join fails
+      if (error) {
+        const fallback = await supabase
+          .from('messages')
+          .select('*')
+          .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activeChat.id}),and(sender_id.eq.${activeChat.id},receiver_id.eq.${currentUser.id})`)
+          .order('created_at', { ascending: true })
+        msgs = fallback.data || []
+        const uids = [...new Set(msgs.map(m => m.sender_id))]
+        if (uids.length) {
+          const { data: profiles } = await supabase.from('profiles').select('id,username,avatar_url').in('id', uids)
+          const pm = {}; (profiles||[]).forEach(p => pm[p.id] = p)
+          msgs.forEach(m => m.sender = pm[m.sender_id] || null)
+        }
+      }
 
       if (!msgs || msgs.length === 0) {
         container.innerHTML = `<div style="text-align:center;color:var(--text-sub);padding:40px 20px;"><div style="font-size:40px;margin-bottom:10px;">👋</div><p>Say hello to @${activeChat.username}!</p></div>`
@@ -563,7 +628,7 @@
       if (!file || !activeChat) return
       showToast('⏳ Uploading...')
       const isImage = file.type.startsWith('image/')
-      const fileName = `msg_${currentUser.id}_${Date.now()}_${file.name}`
+      const fileName = `${currentUser.id}/msg_${Date.now()}_${file.name}`
       const { error } = await supabase.storage.from('post-images').upload(fileName, file)
       if (error) { showToast('❌ Upload failed'); return }
       const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
@@ -584,7 +649,7 @@
           document.getElementById('recordingIndicator').classList.remove('active')
           document.getElementById('voiceBtn').classList.remove('recording')
           const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
-          const fileName = `voice_${currentUser.id}_${Date.now()}.webm`
+          const fileName = `${currentUser.id}/voice_${Date.now()}.webm`
           showToast('⏳ Sending voice...')
           const { error } = await supabase.storage.from('post-images').upload(fileName, audioBlob)
           if (error) { showToast('❌ Voice send failed'); return }

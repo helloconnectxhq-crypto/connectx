@@ -751,12 +751,24 @@
     async function loadReels() {
       const container = document.getElementById('reelsContainer')
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('reels')
         .select('*, profiles(username, avatar_url, full_name)')
         .order('created_at', { ascending: false })
 
-      if (error || !data || data.length === 0) {
+      // Fallback if FK join fails
+      if (error) {
+        const fallback = await supabase.from('reels').select('*').order('created_at', { ascending: false })
+        data = fallback.data || []
+        const uids = [...new Set(data.map(r => r.user_id))]
+        if (uids.length) {
+          const { data: profiles } = await supabase.from('profiles').select('id,username,avatar_url,full_name').in('id', uids)
+          const pm = {}; (profiles||[]).forEach(p => pm[p.id] = p)
+          data.forEach(r => r.profiles = pm[r.user_id] || null)
+        }
+      }
+
+      if (!data || data.length === 0) {
         container.innerHTML = `
           <div class="reels-empty">
             <div class="icon">🎬</div>
@@ -1105,9 +1117,9 @@
         document.getElementById('progressBar').style.width = progress + '%'
       }, 300)
 
-      const fileName = `reel_${currentUser.id}_${Date.now()}.${file.name.split('.').pop()}`
+      const fileName = `${currentUser.id}/reel_${Date.now()}.${file.name.split('.').pop()}`
       const { error: uploadError } = await supabase.storage
-        .from('reels').upload(fileName, file)
+        .from('reels').upload(fileName, file, { cacheControl: '3600', upsert: false })
 
       clearInterval(progInterval)
       document.getElementById('progressBar').style.width = '100%'
