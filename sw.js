@@ -1,4 +1,4 @@
-const CACHE_NAME = 'connectx-v5'
+const CACHE_NAME = 'connectx-v6'
 const ASSETS = [
   '/',
   '/index.html',
@@ -38,12 +38,10 @@ self.addEventListener('activate', e => {
   self.clients.claim()
 })
 
-// Network first — always get fresh content, fallback to cache
+// Network first strategy
 self.addEventListener('fetch', e => {
-  // Skip non-GET and chrome-extension requests
   if (e.request.method !== 'GET') return
   if (e.request.url.startsWith('chrome-extension')) return
-
   e.respondWith(
     fetch(e.request)
       .then(res => {
@@ -52,5 +50,41 @@ self.addEventListener('fetch', e => {
         return res
       })
       .catch(() => caches.match(e.request))
+  )
+})
+
+// ===== PUSH NOTIFICATIONS =====
+self.addEventListener('push', e => {
+  let data = { title: 'ConnectX', body: 'You have a new notification', icon: '/icon-192.png', badge: '/icon-192.png' }
+  try { data = { ...data, ...e.data.json() } } catch {}
+
+  e.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon || '/icon-192.png',
+      badge: '/icon-192.png',
+      vibrate: [200, 100, 200],
+      data: { url: data.url || '/messages.html' },
+      actions: data.actions || [],
+      tag: data.tag || 'connectx-notif',
+      renotify: true
+    })
+  )
+})
+
+// Click on notification — open the app
+self.addEventListener('notificationclick', e => {
+  e.notification.close()
+  const url = e.notification.data?.url || '/feed.html'
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url)
+          return client.focus()
+        }
+      }
+      return clients.openWindow(url)
+    })
   )
 })

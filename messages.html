@@ -379,6 +379,7 @@
 
   <script type="module">
     import { supabase } from './supabase.js'
+    import { initPushNotifications, showLocalNotification } from './push-notify.js'
 
     let currentUser = null
     let currentProfile = null
@@ -398,6 +399,9 @@
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { window.location.href = 'index.html'; return }
       currentUser = session.user
+
+      // Init push notifications (ask permission once)
+      initPushNotifications(supabase, currentUser.id).catch(() => {})
 
       const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
       currentProfile = data
@@ -837,7 +841,11 @@
           loadConversations()
           // Show notification if page not focused
           if (document.hidden) {
-            showToast(`💬 ${profile?.username || 'Someone'}: ${msg.content || '📎 Media'}`)
+            showLocalNotification(
+              `💬 ${profile?.username || 'Someone'}`,
+              msg.content || '📎 Sent an attachment',
+              '/messages.html'
+            )
           }
         })
         // Also listen for own sent messages (so both sides update instantly)
