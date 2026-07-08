@@ -13,6 +13,19 @@
   <meta name="theme-color" content="#6C63FF"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <link rel="stylesheet" href="style.css"/>
+  <!-- OneSignal Push SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || []
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: 'bea396dc-7d22-4c1b-9b53-f51ba4276765',
+        safari_web_id: 'web.onesignal.auto.bea396dc-7d22-4c1b-9b53-f51ba4276765',
+        notifyButton: { enable: false },
+        allowLocalhostAsSecureOrigin: true
+      })
+    })
+  </script>
   <style>
     * { box-sizing: border-box; }
     .msg-layout { padding-top: 60px; height: 100vh; display: flex; position: relative; overflow: hidden; }
@@ -379,7 +392,7 @@
 
   <script type="module">
     import { supabase } from './supabase.js'
-    import { initPushNotifications, showLocalNotification } from './push-notify.js'
+    import { initPushNotifications, showLocalNotification, sendPushToUser } from './push-notify.js'
 
     let currentUser = null
     let currentProfile = null
@@ -755,6 +768,13 @@
       autoResize(input)
       await supabase.from('messages').insert({ sender_id: currentUser.id, receiver_id: activeChat.id, content, media_type: 'text' })
       try { await supabase.from('notifications').insert({ user_id: activeChat.id, actor_id: currentUser.id, type: 'message' }) } catch(e) {}
+      // Send push notification to receiver
+      sendPushToUser(
+        activeChat.id,
+        `💬 ${currentProfile?.username || 'Someone'}`,
+        content,
+        '/messages.html'
+      )
     }
 
     window.handleFileAttach = async function (event) {
