@@ -114,23 +114,54 @@
 
     /* ===== MOBILE RESPONSIVE ===== */
     @media (max-width: 768px) {
+      .msg-layout {
+        padding-top: 60px;
+        height: 100vh;
+        height: 100dvh; /* dynamic viewport height for mobile */
+      }
       .msg-sidebar {
         width: 100%;
         position: absolute;
         left: 0; top: 0; bottom: 0;
         z-index: 5;
         transition: transform 0.25s ease;
+        padding-bottom: 60px; /* bottom nav height */
       }
       .chat-area {
         width: 100%;
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
+        position: fixed; /* fixed so it covers full screen */
+        left: 0;
+        top: 60px; /* below navbar */
+        bottom: 60px; /* above bottom nav */
         transform: translateX(100%);
         transition: transform 0.25s ease;
-        z-index: 6;
+        z-index: 50; /* above bottom nav */
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
       }
       .chat-area.mobile-active {
         transform: translateX(0);
+      }
+      .chat-header {
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .messages-container {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+      }
+      .chat-input-area {
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        background: var(--surface);
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
       }
       .back-btn-mobile {
         display: inline-flex !important;
@@ -138,6 +169,10 @@
       }
       .msg-bubble-wrap {
         max-width: 88%;
+      }
+      /* Hide bottom nav when chat is active on mobile */
+      .chat-active .bottom-nav {
+        display: none !important;
       }
     }
   </style>
@@ -213,7 +248,7 @@
         <div class="chat-header-avatar" id="chatHeaderAvatar">?</div>
         <div class="chat-header-info">
           <div class="chat-header-name" id="chatHeaderName"></div>
-          <div class="chat-header-status">● Online</div>
+          <div class="chat-header-status" id="chatHeaderStatus">⚫ Offline</div>
         </div>
         <div class="call-buttons">
           <button class="call-btn" onclick="startCall('audio')" title="Audio Call">📞</button>
@@ -350,6 +385,8 @@
     // ===== MOBILE BACK =====
     window.backToList = function () {
       document.getElementById('chatArea').classList.remove('mobile-active')
+      document.body.classList.remove('chat-active')
+      if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null }
       activeChat = null
     }
 
@@ -508,6 +545,7 @@
     window.openChat = async function (userId, username, fullName, avatarUrl) {
       activeChat = { id: userId, username, fullName, avatarUrl }
       document.getElementById('chatArea').classList.add('mobile-active')
+      document.body.classList.add('chat-active') // hide bottom nav on mobile
       document.getElementById('chatEmpty').style.display = 'none'
       document.getElementById('chatHeader').style.display = 'flex'
       document.getElementById('messagesContainer').style.display = 'flex'
@@ -582,6 +620,7 @@
       const isSent = msg.sender_id === currentUser.id
       const wrap = document.createElement('div')
       wrap.className = `msg-bubble-wrap ${isSent ? 'sent' : 'received'}`
+      wrap.dataset.msgId = msg.id  // prevent duplicates
       const sender = msg.sender
       const initial = (sender?.username || 'U')[0].toUpperCase()
       const avatarHtml = sender?.avatar_url ? `<img src="${sender.avatar_url}" alt="${sender.username}"/>` : initial
@@ -620,7 +659,7 @@
       input.value = ''
       autoResize(input)
       await supabase.from('messages').insert({ sender_id: currentUser.id, receiver_id: activeChat.id, content, media_type: 'text' })
-      supabase.from('notifications').insert({ user_id: activeChat.id, actor_id: currentUser.id, type: 'message' }).catch(()=>{})
+      try { await supabase.from('notifications').insert({ user_id: activeChat.id, actor_id: currentUser.id, type: 'message' }) } catch(e) {}
     }
 
     window.handleFileAttach = async function (event) {
@@ -681,16 +720,55 @@
 
     function subscribeToMessages() {
       if (realtimeChannel) supabase.removeChannel(realtimeChannel)
-      realtimeChannel = supabase.channel('chat-' + activeChat.id + '-' + currentUser.id)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+
+      // Use a consistent channel name — same for both users in the conversation
+      const chatId = [currentUser.id, activeChat.id].sort().join('_')
+
+      realtimeChannel = supabase.channel(`chat_${chatId}`)
+        // Listen for new messages via postgres changes
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `receiver_id=eq.${currentUser.id}`
+        }, async (payload) => {
           const msg = payload.new
-          if ((msg.sender_id===currentUser.id&&msg.receiver_id===activeChat.id)||(msg.sender_id===activeChat.id&&msg.receiver_id===currentUser.id)) {
-            const container = document.getElementById('messagesContainer')
-            container.appendChild(createBubble(msg))
-            container.scrollTop = container.scrollHeight
-            loadConversations()
+          // Only show if it's from our active chat partner
+          if (msg.sender_id !== activeChat.id) return
+          // Fetch sender profile for bubble
+          const { data: profile } = await supabase.from('profiles').select('username,avatar_url').eq('id', msg.sender_id).single()
+          msg.sender = profile
+          const container = document.getElementById('messagesContainer')
+          container.appendChild(createBubble(msg))
+          container.scrollTop = container.scrollHeight
+          // Mark as read immediately
+          await supabase.from('messages').update({ read: true }).eq('id', msg.id)
+          loadConversations()
+          // Show notification if page not focused
+          if (document.hidden) {
+            showToast(`💬 ${profile?.username || 'Someone'}: ${msg.content || '📎 Media'}`)
           }
-        }).subscribe()
+        })
+        // Also listen for own sent messages (so both sides update instantly)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${currentUser.id}`
+        }, (payload) => {
+          const msg = payload.new
+          if (msg.receiver_id !== activeChat.id) return
+          // Avoid duplicate — only append if not already in DOM
+          if (document.querySelector(`[data-msg-id="${msg.id}"]`)) return
+          msg.sender = { username: currentProfile?.username, avatar_url: currentProfile?.avatar_url }
+          const container = document.getElementById('messagesContainer')
+          container.appendChild(createBubble(msg))
+          container.scrollTop = container.scrollHeight
+          loadConversations()
+        })
+        .subscribe((status) => {
+          console.log('Realtime status:', status)
+        })
     }
 
     window.openNewChat = () => document.getElementById('newChatModal').classList.add('open')

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'connectx-v3'
+const CACHE_NAME = 'connectx-v5'
 const ASSETS = [
   '/',
   '/index.html',
@@ -9,14 +9,17 @@ const ASSETS = [
   '/reels.html',
   '/live.html',
   '/signup.html',
+  '/reset-password.html',
   '/style.css',
   '/supabase.js',
   '/realtime.js',
+  '/app.js',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-192-maskable.png',
-  '/icon-512-maskable.png'
+  '/icon-512-maskable.png',
+  '/favicon.ico'
 ]
 
 self.addEventListener('install', e => {
@@ -35,7 +38,12 @@ self.addEventListener('activate', e => {
   self.clients.claim()
 })
 
+// Network first — always get fresh content, fallback to cache
 self.addEventListener('fetch', e => {
+  // Skip non-GET and chrome-extension requests
+  if (e.request.method !== 'GET') return
+  if (e.request.url.startsWith('chrome-extension')) return
+
   e.respondWith(
     fetch(e.request)
       .then(res => {
