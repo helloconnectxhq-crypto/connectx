@@ -112,7 +112,69 @@
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--elevated); color: var(--text); padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; border: 1px solid var(--border); transition: transform 0.3s ease; z-index: 9999; }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ===== MOBILE RESPONSIVE ===== */
+    /* ===== MESSAGE OPTIONS MENU ===== */
+    .msg-options-menu {
+      position: fixed;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 6px;
+      z-index: 999;
+      min-width: 180px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+    }
+    .msg-option-btn {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 11px 14px;
+      background: none; border: none;
+      color: var(--text); font-size: 14px; font-weight: 600;
+      cursor: pointer; border-radius: 10px;
+      text-align: left; transition: background 0.15s;
+    }
+    .msg-option-btn:hover { background: var(--border); }
+    .msg-option-btn.danger { color: #FF5252; }
+    .msg-option-btn.danger:hover { background: rgba(255,82,82,0.12); }
+
+    /* ===== CONVERSATION OPTIONS ===== */
+    .conv-options-btn {
+      background: none; border: none; color: var(--text-sub);
+      font-size: 18px; cursor: pointer; padding: 4px 8px;
+      border-radius: 8px; opacity: 0; transition: opacity 0.2s;
+    }
+    .conv-item:hover .conv-options-btn { opacity: 1; }
+    .conv-options-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 500; display: none; align-items: flex-end;
+      justify-content: center; backdrop-filter: blur(4px);
+    }
+    .conv-options-modal.open { display: flex; }
+    .conv-options-sheet {
+      background: var(--surface); border-radius: 20px 20px 0 0;
+      padding: 20px; width: 100%; max-width: 500px;
+      border: 1px solid var(--border);
+    }
+    .conv-options-title {
+      font-size: 13px; color: var(--text-sub); font-weight: 600;
+      text-align: center; margin-bottom: 16px;
+    }
+    .conv-option-btn {
+      display: flex; align-items: center; gap: 14px;
+      width: 100%; padding: 14px 16px;
+      background: none; border: none; color: var(--text);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      border-radius: 12px; text-align: left; transition: background 0.15s;
+      margin-bottom: 4px;
+    }
+    .conv-option-btn:hover { background: var(--elevated); }
+    .conv-option-btn.danger { color: #FF5252; }
+    .conv-option-btn.danger:hover { background: rgba(255,82,82,0.1); }
+    .conv-option-cancel {
+      width: 100%; padding: 14px; margin-top: 8px;
+      background: var(--elevated); border: none; border-radius: 12px;
+      color: var(--text-sub); font-size: 15px; font-weight: 700;
+      cursor: pointer;
+    }
     @media (max-width: 768px) {
       .msg-layout {
         padding-top: 60px;
@@ -178,6 +240,23 @@
   </style>
 </head>
 <body>
+
+  <!-- Message options context menu -->
+  <div class="msg-options-menu" id="msgOptionsMenu" style="display:none;">
+    <button class="msg-option-btn" onclick="copyMessage()">📋 Copy</button>
+    <button class="msg-option-btn danger" id="unsendBtn" onclick="unsendMessage()" style="display:none;">↩️ Unsend</button>
+    <button class="msg-option-btn danger" onclick="deleteMessageForMe()">🗑️ Delete for me</button>
+  </div>
+
+  <!-- Conversation options bottom sheet -->
+  <div class="conv-options-modal" id="convOptionsModal" onclick="closeConvOptions()">
+    <div class="conv-options-sheet" onclick="event.stopPropagation()">
+      <div class="conv-options-title" id="convOptionsTitle">Conversation options</div>
+      <button class="conv-option-btn" onclick="clearChatHistory()">🧹 Clear chat history</button>
+      <button class="conv-option-btn danger" onclick="deleteConversation()">🗑️ Delete conversation</button>
+      <button class="conv-option-cancel" onclick="closeConvOptions()">Cancel</button>
+    </div>
+  </div>
 
   <!-- ===== SIDE DRAWER ===== -->
   <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -515,7 +594,7 @@
               <div class="conv-name">${u.full_name||u.username}</div>
               <div class="conv-preview">${preview}</div>
             </div>
-            <div class="conv-meta"><div class="conv-time">${formatTime(msg.created_at)}</div></div>
+            <div class="conv-meta"><div class="conv-time">${formatTime(msg.created_at)}</div><button class="conv-options-btn" onclick="event.stopPropagation();openConvOptions('${conv.id}','${(conv.full_name||conv.username||'User').replace(/'/g,"\\'")}')">⋯</button></div>
           </div>`
       }).join('')
     }
@@ -647,6 +726,18 @@
       } else {
         bubble.innerHTML = `${msg.content||''}<div class="msg-time">${formatChatTime(msg.created_at)}${isSent?` <span class="read-tick ${msg.read?'read':''}">✓✓</span>`:''}</div>`
       }
+
+      // Long press (mobile) + right click (desktop) for options
+      let pressTimer = null
+      const showOptions = (e) => {
+        e.preventDefault()
+        const rect = wrap.getBoundingClientRect()
+        showMsgOptions(msg, isSent, rect.left, rect.bottom)
+      }
+      wrap.addEventListener('contextmenu', showOptions)
+      wrap.addEventListener('touchstart', () => { pressTimer = setTimeout(() => showMsgOptions(msg, isSent, 20, 200), 500) }, { passive: true })
+      wrap.addEventListener('touchend', () => clearTimeout(pressTimer))
+      wrap.addEventListener('touchmove', () => clearTimeout(pressTimer))
 
       wrap.appendChild(bubble)
       return wrap
@@ -800,6 +891,105 @@
     function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500) }
     function formatTime(dateStr) { const diff=Math.floor((Date.now()-new Date(dateStr))/1000); if(diff<60)return`${diff}s ago`; if(diff<3600)return`${Math.floor(diff/60)}m ago`; if(diff<86400)return`${Math.floor(diff/3600)}h ago`; return`${Math.floor(diff/86400)}d ago` }
     function formatChatTime(dateStr) { const d=new Date(dateStr); return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) }
+
+    // ===== MESSAGE OPTIONS =====
+    let selectedMsg = null
+    let selectedIsSent = false
+
+    function showMsgOptions(msg, isSent, x, y) {
+      selectedMsg = msg
+      selectedIsSent = isSent
+      const menu = document.getElementById('msgOptionsMenu')
+      document.getElementById('unsendBtn').style.display = isSent ? 'flex' : 'none'
+      // Position menu smartly
+      menu.style.display = 'block'
+      const vw = window.innerWidth, vh = window.innerHeight
+      const mx = Math.min(x, vw - 200)
+      const my = Math.min(y + 8, vh - 160)
+      menu.style.left = mx + 'px'
+      menu.style.top = my + 'px'
+      // Close on outside click
+      setTimeout(() => document.addEventListener('click', closeMsgOptions, { once: true }), 100)
+    }
+
+    function closeMsgOptions() {
+      document.getElementById('msgOptionsMenu').style.display = 'none'
+      selectedMsg = null
+    }
+
+    window.copyMessage = function() {
+      if (!selectedMsg?.content) return
+      navigator.clipboard.writeText(selectedMsg.content).then(() => showToast('📋 Copied!'))
+      closeMsgOptions()
+    }
+
+    window.unsendMessage = async function() {
+      if (!selectedMsg || !selectedIsSent) return
+      closeMsgOptions()
+      const { error } = await supabase.from('messages').delete().eq('id', selectedMsg.id).eq('sender_id', currentUser.id)
+      if (!error) {
+        const el = document.querySelector(`[data-msg-id="${selectedMsg.id}"]`)
+        if (el) el.remove()
+        showToast('↩️ Message unsent')
+      } else showToast('❌ ' + error.message)
+    }
+
+    window.deleteMessageForMe = async function() {
+      if (!selectedMsg) return
+      closeMsgOptions()
+      // Mark as deleted for current user (soft delete)
+      const el = document.querySelector(`[data-msg-id="${selectedMsg.id}"]`)
+      if (el) { el.style.opacity = '0'; setTimeout(() => el.remove(), 300) }
+      showToast('🗑️ Message deleted')
+      // Store in local deleted list
+      const key = `deleted_msgs_${currentUser.id}`
+      const deleted = JSON.parse(sessionStorage.getItem(key) || '[]')
+      deleted.push(selectedMsg.id)
+      sessionStorage.setItem(key, JSON.stringify(deleted))
+    }
+
+    // ===== CONVERSATION OPTIONS =====
+    let convOptionsUserId = null
+
+    window.openConvOptions = function(userId, username) {
+      convOptionsUserId = userId
+      document.getElementById('convOptionsTitle').textContent = `Chat with ${username}`
+      document.getElementById('convOptionsModal').classList.add('open')
+    }
+
+    window.closeConvOptions = function() {
+      document.getElementById('convOptionsModal').classList.remove('open')
+      convOptionsUserId = null
+    }
+
+    window.clearChatHistory = async function() {
+      if (!convOptionsUserId) return
+      closeConvOptions()
+      const uid = convOptionsUserId
+      // Delete all messages between these two users
+      const { error } = await supabase.from('messages').delete()
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${uid}),and(sender_id.eq.${uid},receiver_id.eq.${currentUser.id})`)
+      if (!error) {
+        showToast('🧹 Chat cleared!')
+        if (activeChat?.id === uid) {
+          document.getElementById('messagesContainer').innerHTML = `<div style="text-align:center;color:var(--text-sub);padding:40px 20px;"><div style="font-size:40px;margin-bottom:10px;">👋</div><p>Say hello!</p></div>`
+        }
+        loadConversations()
+      } else showToast('❌ ' + error.message)
+    }
+
+    window.deleteConversation = async function() {
+      if (!convOptionsUserId) return
+      closeConvOptions()
+      const uid = convOptionsUserId
+      const { error } = await supabase.from('messages').delete()
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${uid}),and(sender_id.eq.${uid},receiver_id.eq.${currentUser.id})`)
+      if (!error) {
+        showToast('🗑️ Conversation deleted!')
+        if (activeChat?.id === uid) backToList()
+        loadConversations()
+      } else showToast('❌ ' + error.message)
+    }
 
     window.openDrawer = function() {
       document.getElementById('sideDrawer').classList.add('open')
