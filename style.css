@@ -60,17 +60,17 @@ a { text-decoration: none; color: inherit; }
 .auth-page {
   display: flex; align-items: center; justify-content: center;
   min-height: 100vh; padding: 20px;
-  background: var(--bg);
+  background: #000;
 }
 
 .auth-card {
-  background: var(--surface);
+  background: #111111;
   width: 100%; max-width: 400px;
   padding: 44px 36px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
+  border-radius: 24px;
+  border: 1px solid #222222;
   text-align: center;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 64px rgba(0,0,0,0.5);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 32px 64px rgba(0,0,0,0.8);
 }
 
 .logo {
