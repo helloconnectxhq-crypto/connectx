@@ -953,12 +953,21 @@
       if (isLiked) {
         likedIds.delete(reelId)
         btn.classList.remove('liked')
+        await supabase.rpc('decrement_reel_likes', { reel_id: reelId }).catch(() =>
+          supabase.from('reels').update({ likes_count: Math.max(0, newCount) }).eq('id', reelId)
+        )
       } else {
         likedIds.add(reelId)
         btn.classList.add('liked')
+        await supabase.rpc('increment_reel_likes', { reel_id: reelId }).catch(() =>
+          supabase.from('reels').update({ likes_count: newCount }).eq('id', reelId)
+        )
+        // Notify reel owner
+        const { data: reel } = await supabase.from('reels').select('user_id').eq('id', reelId).single()
+        if (reel && reel.user_id !== currentUser.id) {
+          await supabase.from('notifications').insert({ user_id: reel.user_id, actor_id: currentUser.id, type: 'like' }).catch(() => {})
+        }
       }
-
-      await supabase.from('reels').update({ likes_count: newCount }).eq('id', reelId)
     }
 
     // ===== FOLLOW =====
