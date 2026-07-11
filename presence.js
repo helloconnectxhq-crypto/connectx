@@ -1,72 +1,99 @@
 // ConnectX - presence.js
-// Global online presence system — import in any page
-// Usage: import { initPresence, isOnline, onPresenceChange } from './presence.js'
+// Works across ALL pages — stores online status in Supabase table
+// So any page can see who is online
 
 import { supabase } from './supabase.js'
 
-let presenceChannel = null
 export const onlineUsers = new Set()
 const listeners = []
+let heartbeatInterval = null
+let currentUserId = null
 
-// Start tracking presence for current user + listen to all others
+// ===== INIT PRESENCE =====
 export async function initPresence(userId) {
-  if (presenceChannel) return // already running
+  currentUserId = userId
 
-  presenceChannel = supabase.channel('global-presence', {
-    config: { presence: { key: userId } }
+  // 1. Mark self as online in DB
+  await setOnlineStatus(userId, true)
+
+  // 2. Heartbeat every 30s to stay online
+  heartbeatInterval = setInterval(() => setOnlineStatus(userId, true), 30000)
+
+  // 3. Mark offline when page closes
+  window.addEventListener('beforeunload', () => {
+    setOnlineStatus(userId, false)
+    navigator.sendBeacon(`https://nyldfpwwabboixhxjvds.supabase.co/rest/v1/user_presence?user_id=eq.${userId}`,
+      JSON.stringify({ is_online: false, last_seen: new Date().toISOString() })
+    )
   })
 
-  presenceChannel
-    .on('presence', { event: 'sync' }, () => {
-      const state = presenceChannel.presenceState()
-      onlineUsers.clear()
-      Object.keys(state).forEach(id => onlineUsers.add(id))
-      listeners.forEach(fn => fn(new Set(onlineUsers)))
-      updateAllDots()
+  // 4. Mark online when tab becomes visible again
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) setOnlineStatus(userId, true)
+    else setOnlineStatus(userId, false)
+  })
+
+  // 5. Load initial online users
+  await loadOnlineUsers()
+
+  // 6. Subscribe to real-time changes in presence table
+  supabase.channel('presence-table')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'user_presence'
+    }, () => {
+      loadOnlineUsers()
     })
-    .on('presence', { event: 'join' }, ({ key }) => {
-      onlineUsers.add(key)
-      listeners.forEach(fn => fn(new Set(onlineUsers)))
-      updateAllDots()
-    })
-    .on('presence', { event: 'leave' }, ({ key }) => {
-      onlineUsers.delete(key)
-      listeners.forEach(fn => fn(new Set(onlineUsers)))
-      updateAllDots()
-    })
-    .subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        await presenceChannel.track({
-          user_id: userId,
-          online_at: new Date().toISOString()
-        })
-      }
-    })
+    .subscribe()
 }
 
-// Check if a specific user is online
+// Set online/offline in DB
+async function setOnlineStatus(userId, isOnline) {
+  await supabase.from('user_presence').upsert({
+    user_id: userId,
+    is_online: isOnline,
+    last_seen: new Date().toISOString()
+  }, { onConflict: 'user_id' })
+}
+
+// Load all currently online users
+async function loadOnlineUsers() {
+  // Online = last_seen within 2 minutes AND is_online = true
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString()
+  const { data } = await supabase
+    .from('user_presence')
+    .select('user_id')
+    .eq('is_online', true)
+    .gte('last_seen', twoMinutesAgo)
+
+  onlineUsers.clear()
+  ;(data || []).forEach(row => onlineUsers.add(row.user_id))
+  listeners.forEach(fn => fn(new Set(onlineUsers)))
+  updateAllDots()
+}
+
+// Check if user is online
 export function isOnline(userId) {
   return onlineUsers.has(userId)
 }
 
-// Register a callback for presence changes
+// Register callback
 export function onPresenceChange(fn) {
   listeners.push(fn)
 }
 
-// Update all [data-user-id] elements with online dot
+// Update ALL [data-user-id] elements across the page
 function updateAllDots() {
   document.querySelectorAll('[data-user-id]').forEach(el => {
     const uid = el.dataset.userId
+    // Online dot
     const dot = el.querySelector('.online-dot')
-    if (dot) {
-      dot.style.display = onlineUsers.has(uid) ? 'block' : 'none'
-    }
-    // Also update status text if exists
-    const status = el.querySelector('.online-status-text')
-    if (status) {
-      status.textContent = onlineUsers.has(uid) ? '🟢 Online' : ''
-      status.style.color = 'var(--success)'
+    if (dot) dot.style.display = onlineUsers.has(uid) ? 'block' : 'none'
+    // Status text
+    const statusEl = el.querySelector('.online-status-text')
+    if (statusEl) {
+      statusEl.textContent = onlineUsers.has(uid) ? '🟢 Online' : ''
     }
   })
 }

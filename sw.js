@@ -1,4 +1,4 @@
-const CACHE_NAME = 'connectx-v6'
+const CACHE_NAME = 'connectx-v7'
 const ASSETS = [
   '/',
   '/index.html',
@@ -14,6 +14,8 @@ const ASSETS = [
   '/supabase.js',
   '/realtime.js',
   '/app.js',
+  '/presence.js',
+  '/push-notify.js',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',

@@ -393,6 +393,7 @@
   <script type="module">
     import { supabase } from './supabase.js'
     import { initPushNotifications, showLocalNotification, sendPushToUser } from './push-notify.js'
+    import { initPresence, isOnline, onPresenceChange } from './presence.js'
 
     let currentUser = null
     let currentProfile = null
@@ -413,8 +414,12 @@
       if (!session) { window.location.href = 'index.html'; return }
       currentUser = session.user
 
-      // Init push notifications (ask permission once)
+      // Init push notifications
       initPushNotifications(supabase, currentUser.id).catch(() => {})
+      // Init global presence
+      initPresence(currentUser.id)
+      // Update conv dots when presence changes
+      onPresenceChange(() => updateConvOnlineDots())
 
       const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
       currentProfile = data
@@ -1017,6 +1022,24 @@
         if (activeChat?.id === uid) backToList()
         loadConversations()
       } else showToast('❌ ' + error.message)
+    }
+
+    // Update online dots in conversation list using DB presence
+    function updateConvOnlineDots() {
+      document.querySelectorAll('.conv-avatar[data-user-id]').forEach(el => {
+        const uid = el.dataset.userId
+        const dot = el.querySelector('.online-dot')
+        if (dot) dot.style.display = isOnline(uid) ? 'block' : 'none'
+      })
+      // Update chat header status
+      if (activeChat) {
+        const statusEl = document.getElementById('chatHeaderStatus')
+        if (statusEl) {
+          const online = isOnline(activeChat.id)
+          statusEl.textContent = online ? '🟢 Online' : '⚫ Offline'
+          statusEl.style.color = online ? 'var(--success)' : 'var(--text-muted)'
+        }
+      }
     }
 
     window.openDrawer = function() {
