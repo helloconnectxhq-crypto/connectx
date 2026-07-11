@@ -905,6 +905,7 @@
 
   <script type="module">
     import { supabase } from './supabase.js'
+    import { initPresence, isOnline } from './presence.js'
 
     let currentUser = null
     let currentProfile = null
@@ -917,6 +918,7 @@
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { window.location.href = 'index.html'; return }
       currentUser = session.user
+      initPresence(currentUser.id) // Start global presence tracking
 
       const { data } = await supabase
         .from('profiles').select('username, avatar_url')
@@ -1255,7 +1257,7 @@
       return `
         <div class="post-card" id="post-${post.id}">
           <div class="post-header">
-            <div class="avatar" style="background:linear-gradient(135deg,#6C63FF,#00D4AA);overflow:hidden;">${avatarHtml}</div>
+            <div class="avatar" data-user-id="${post.user_id}" style="background:linear-gradient(135deg,#6C63FF,#00D4AA);overflow:hidden;">${avatarHtml}<div class="online-dot"></div></div>
             <div>
               <div class="post-username">@${username}</div>
               <div class="post-time">${timeAgo}</div>

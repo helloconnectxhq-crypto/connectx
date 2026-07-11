@@ -774,3 +774,31 @@ a { text-decoration: none; color: inherit; }
   .posts-grid { grid-template-columns: repeat(3, 1fr); gap: 1px; }
   .auth-card { padding: 32px 20px; }
 }
+
+/* ===== ONLINE PRESENCE DOT (global) ===== */
+.online-dot {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 11px; height: 11px;
+  background: #10B981;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  display: none; /* shown via JS when user is online */
+  z-index: 2;
+}
+.online-dot.large {
+  width: 14px; height: 14px;
+  bottom: 3px; right: 3px;
+}
+.online-status-text {
+  font-size: 12px; font-weight: 600;
+  color: var(--success);
+  display: block;
+}
+
+/* Avatar wrapper needs position:relative for dot to work */
+.avatar, .conv-avatar, .profile-avatar,
+.story-header-avatar, .comment-avatar,
+.chat-header-avatar, .user-card-avatar,
+.drawer-avatar, .reel-avatar {
+  position: relative;
+}

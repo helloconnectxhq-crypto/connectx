@@ -441,16 +441,18 @@
 
   <!-- Profile Info -->
   <div class="profile-info">
-    <div class="avatar-wrapper">
+    <div class="avatar-wrapper" id="profileAvatarWrap">
       <div id="avatarEl">
         <div class="avatar-initial" id="avatarInitial">?</div>
       </div>
+      <div class="online-dot large" id="profileOnlineDot" style="display:none;"></div>
       <div class="avatar-edit-btn" onclick="document.getElementById('avatar-input').click()">✏️</div>
       <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar(event)"/>
     </div>
 
     <div class="profile-name"     id="profileName">Loading...</div>
     <div class="profile-username" id="profileUsername">@...</div>
+    <div class="online-status-text" id="profileOnlineStatus"></div>
     <div class="profile-bio"      id="profileBio"></div>
 
     <div class="profile-meta" id="profileMeta"></div>
@@ -542,6 +544,7 @@
 
   <script type="module">
     import { supabase } from './supabase.js'
+    import { initPresence, isOnline } from './presence.js'
 
     let currentUser = null
 
@@ -549,6 +552,7 @@
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { window.location.href = 'index.html'; return }
       currentUser = session.user
+      initPresence(currentUser.id)
       await loadProfile()
       await loadPosts()
       await loadFollowCounts()
@@ -754,6 +758,13 @@
       document.getElementById('profileName').textContent     = data.full_name || data.username || 'User'
       document.getElementById('profileUsername').textContent = '@' + (data.username || '')
       document.getElementById('profileBio').textContent      = data.bio || ''
+
+      // Show online status
+      const dot = document.getElementById('profileOnlineDot')
+      const statusText = document.getElementById('profileOnlineStatus')
+      const online = isOnline(userId)
+      if (dot) dot.style.display = online ? 'block' : 'none'
+      if (statusText) { statusText.textContent = online ? '🟢 Online' : ''; }
       document.getElementById('profileActions').style.display = 'none'
       document.getElementById('otherUserActions').style.display = 'flex'
       const { data: fd } = await supabase.from('follows').select('id').eq('follower_id', currentUser.id).eq('following_id', userId).single()
@@ -902,6 +913,8 @@
     } else {
       listenForCalls(); initPeer()
     }
+
+  </script>
 
 </body>
 </html>
