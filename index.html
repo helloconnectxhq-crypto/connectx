@@ -150,215 +150,151 @@
   }
   </script>
 
-  <link rel="stylesheet" href="style.css"/>
-
   <style>
-    /* Extra login page polish */
-    .auth-page {
-      background: #000;
-    }
-    .auth-card {
-      animation: fadeUp 0.4s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .logo {
-      background: linear-gradient(135deg, #6C63FF, #00D4AA);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .features-row {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin: 20px 0 8px;
-    }
-    .feature-chip {
-      font-size: 11px;
-      color: var(--text-sub);
-      background: var(--card);
-      padding: 5px 10px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 16px 0;
-      color: var(--text-sub);
-      font-size: 12px;
-    }
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .password-wrapper {
-      position: relative;
-    }
-    .password-wrapper input {
-      padding-right: 44px;
-    }
-    .toggle-pw {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      color: var(--text-sub);
-      padding: 4px;
-    }
-    .toggle-pw:hover { color: var(--text); }
-    .forgot-link {
-      display: block;
-      text-align: right;
-      font-size: 12px;
-      color: var(--violet);
-      margin-top: 4px;
-      cursor: pointer;
-    }
-    .forgot-link:hover { color: var(--teal); }
-  </style>
+:root{--bg:#e6eff6;--card:#fff;--ink:#12263a;--mute:#5b6f82;--line:#cbd9e5;--accent:#1d5fd1;--accent-ink:#fff;--ok:#127a4a;--err:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1a26;--card:#16273a;--ink:#e8f0f7;--mute:#9db1c4;--line:#2b415a;--accent:#6aa4ff;--accent-ink:#0b1b2e;--ok:#5fd39a;--err:#ff7b6b}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;display:grid;place-items:center;padding:20px}
+main{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px}
+h1{font-size:1.7rem;margin:0 0 4px;letter-spacing:-.02em}
+p.sub{margin:0 0 20px;color:var(--mute);font-size:.95rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:20px}
+.tabs button{border:0;background:none;color:var(--mute);font:inherit;font-weight:600;padding:9px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.sp{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;background:none;color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.sp:hover{border-color:var(--accent)}
+.sp svg{width:20px;height:20px;flex:none}
+.or{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:.85rem;margin:16px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+label{display:block;font-size:.85rem;font-weight:600;margin:0 0 4px}
+input{width:100%;padding:11px 12px;margin-bottom:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.pw{position:relative}.pw input{padding-right:44px}
+.eye{position:absolute;right:8px;top:6px;background:none;border:0;cursor:pointer;font-size:16px;padding:4px;color:var(--mute)}
+.forgot{display:block;text-align:right;font-size:.82rem;color:var(--accent);margin:-4px 0 14px;cursor:pointer;background:none;border:0;font-family:inherit;padding:0;width:100%}
+.go{width:100%;padding:12px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;cursor:pointer}
+.go:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin:14px 0 0;font-size:.9rem;min-height:1.2em}
+.msg.error{color:var(--err)}.msg.success{color:var(--ok)}
+.hide{display:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
 </head>
 <body>
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
-
-  <div class="auth-page">
-    <div class="auth-card">
-      <div class="logo">ConnectX</div>
-      <div class="tagline">Connect Beyond Limits</div>
-
-      <div class="features-row">
-        <span class="feature-chip">💬 Messaging</span>
-        <span class="feature-chip">🎬 Reels</span>
-        <span class="feature-chip">🔴 Live</span>
-        <span class="feature-chip">📸 Stories</span>
-      </div>
-
-      <div class="divider">Log in to your account</div>
-
-      <div class="input-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
-      </div>
-
-      <div class="input-group">
-        <label>Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
-          <button class="toggle-pw" type="button" onclick="togglePassword()" id="togglePwBtn">👁</button>
-        </div>
-        <span class="forgot-link" onclick="forgotPassword()">Forgot password?</span>
-      </div>
-
-      <button class="btn btn-primary" onclick="login()" id="loginBtn">Log In</button>
-
-      <div id="msg" class="msg"></div>
-
-      <div class="switch-text">
-        Don't have an account? <a href="signup.html">Sign Up</a>
-      </div>
-    </div>
+<main>
+  <h1 id="title">Welcome back</h1>
+  <p class="sub" id="sub">Log in to ConnectX.</p>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-login" aria-selected="true">Log in</button>
+    <button role="tab" id="t-signup" aria-selected="false">Sign up</button>
   </div>
 
-  <script type="module">
-    import { supabase } from './supabase.js'
+  <button class="sp" type="button" data-p="google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2.1-1.9 3.3-4.7 3.3-8z"/><path fill="#34A853" d="M12 23c3 0 5.4-1 7.2-2.7l-3.5-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.2v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.8 14.2a6.600 6.600 0 0 1 0-4.300V7.100H2.200a11 11 0 0 0 0 9.900z"/><path fill="#EA4335" d="M12 5.400c1.600 0 3.100.6 4.200 1.700l3.100-3.100A11 11 0 0 0 2.200 7.100l3.600 2.800C6.700 7.300 9.100 5.400 12 5.400z"/></svg><span class="lbl">Continue with Google</span></button>
+  <button class="sp" type="button" data-p="twitter"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M18.200 2.300h3.400l-7.400 8.500 8.700 11.500h-6.800l-5.300-7-6.100 7H1.300l7.900-9.100L.9 2.300h7l4.800 6.400zm-1.200 17.900h1.900L6.900 4.200H4.900z"/></svg><span class="lbl">Continue with X</span></button>
+  <button class="sp" type="button" data-p="facebook"><svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12a12 12 0 1 0-13.900 11.900v-8.400H7.100V12h3V9.400c0-3 1.800-4.700 4.500-4.700 1.300 0 2.700.2 2.700.2v3h-1.500c-1.500 0-2 .9-2 1.900V12h3.400l-.5 3.500h-2.800v8.400A12 12 0 0 0 24 12z"/></svg><span class="lbl">Continue with Facebook</span></button>
 
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {})
-    }
+  <div class="or">or use email</div>
 
-    // Auto-redirect if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.href = 'feed.html'
+  <div id="nameWrap" class="hide"><label for="name">Full name</label><input id="name" autocomplete="name"></div>
+  <label for="email">Email</label>
+  <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  <label for="password">Password</label>
+  <div class="pw">
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="eye" type="button" id="eye" aria-label="Show password">👁</button>
+  </div>
+  <button class="forgot" type="button" id="forgot">Forgot password?</button>
+  <button class="go" id="go">Log in</button>
+  <p class="msg" id="msg" role="status"></p>
+</main>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {})
+
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) window.location.href = 'feed.html'
+})
+
+const $ = id => document.getElementById(id)
+let signup = false
+
+function say(text, type) { $('msg').className = 'msg ' + (type || ''); $('msg').textContent = text }
+
+function mode(s) {
+  signup = s
+  $('t-login').setAttribute('aria-selected', !s)
+  $('t-signup').setAttribute('aria-selected', s)
+  $('title').textContent = s ? 'Create your account' : 'Welcome back'
+  $('sub').textContent = s ? 'Join ConnectX in a few seconds.' : 'Log in to ConnectX.'
+  $('go').textContent = s ? 'Create account' : 'Log in'
+  $('nameWrap').className = s ? '' : 'hide'
+  $('forgot').className = s ? 'forgot hide' : 'forgot'
+  $('password').autocomplete = s ? 'new-password' : 'current-password'
+  document.querySelectorAll('.sp').forEach(b => {
+    b.querySelector('.lbl').textContent = (s ? 'Sign up with ' : 'Continue with ') + ({google:'Google',twitter:'X',facebook:'Facebook'})[b.dataset.p]
+  })
+  say('')
+}
+$('t-login').onclick = () => mode(false)
+$('t-signup').onclick = () => mode(true)
+
+$('eye').onclick = () => {
+  const pw = $('password'), show = pw.type === 'password'
+  pw.type = show ? 'text' : 'password'
+  $('eye').textContent = show ? '🙈' : '👁'
+}
+
+// Google / X / Facebook (login and signup in one step)
+document.querySelectorAll('.sp').forEach(b => {
+  b.onclick = async () => {
+    say('')
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: b.dataset.p,
+      options: { redirectTo: window.location.origin + '/feed.html' }
     })
+    if (error) say(error.message, 'error')
+  }
+})
 
-    // Toggle password visibility
-    window.togglePassword = function() {
-      const pw = document.getElementById('password')
-      const btn = document.getElementById('togglePwBtn')
-      if (pw.type === 'password') {
-        pw.type = 'text'
-        btn.textContent = '🙈'
-      } else {
-        pw.type = 'password'
-        btn.textContent = '👁'
-      }
-    }
+// Email login / signup
+async function submit() {
+  const email = $('email').value.trim(), password = $('password').value, name = $('name').value.trim()
+  if (!email || !password || (signup && !name)) return say('Please fill in all fields.', 'error')
 
-    // Login
-    window.login = async function() {
-      const email    = document.getElementById('email').value.trim()
-      const password = document.getElementById('password').value
-      const msg      = document.getElementById('msg')
-      const btn      = document.getElementById('loginBtn')
+  const btn = $('go'), label = btn.textContent
+  btn.textContent = signup ? 'Creating account...' : 'Logging in...'
+  btn.disabled = true
 
-      msg.className  = 'msg'
-      msg.textContent = ''
+  const { data, error } = signup
+    ? await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } })
+    : await supabase.auth.signInWithPassword({ email, password })
 
-      if (!email || !password) {
-        msg.className = 'msg error'
-        msg.textContent = 'Please fill in all fields.'
-        return
-      }
+  if (error) {
+    say(error.message, 'error')
+    btn.textContent = label
+    btn.disabled = false
+  } else if (signup && !data.session) {
+    say('📧 Check your email to confirm your account.', 'success')
+    btn.textContent = label
+    btn.disabled = false
+  } else {
+    say(signup ? '✅ Account created! Redirecting...' : '✅ Logged in! Redirecting...', 'success')
+    setTimeout(() => window.location.href = 'feed.html', 800)
+  }
+}
+$('go').onclick = submit
+document.addEventListener('keydown', e => { if (e.key === 'Enter') submit() })
 
-      btn.textContent = 'Logging in...'
-      btn.disabled = true
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-      if (error) {
-        msg.className = 'msg error'
-        msg.textContent = error.message
-        btn.textContent = 'Log In'
-        btn.disabled = false
-      } else {
-        msg.className = 'msg success'
-        msg.textContent = '✅ Logged in! Redirecting...'
-        setTimeout(() => window.location.href = 'feed.html', 800)
-      }
-    }
-
-    // Forgot password
-    window.forgotPassword = async function() {
-      const email = document.getElementById('email').value.trim()
-      const msg   = document.getElementById('msg')
-
-      if (!email) {
-        msg.className = 'msg error'
-        msg.textContent = 'Enter your email above first.'
-        return
-      }
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://connectx-psi.vercel.app/reset-password.html'
-      })
-
-      if (error) {
-        msg.className = 'msg error'
-        msg.textContent = error.message
-      } else {
-        msg.className = 'msg success'
-        msg.textContent = '📧 Password reset email sent! Check your inbox.'
-      }
-    }
-
-    // Allow Enter key to submit
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') login()
-    })
-  </script>
+// Forgot password
+$('forgot').onclick = async () => {
+  const email = $('email').value.trim()
+  if (!email) return say('Enter your email above first.', 'error')
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://connectx-psi.vercel.app/reset-password.html'
+  })
+  error ? say(error.message, 'error') : say('📧 Password reset email sent! Check your inbox.', 'success')
+}
+</script>
 </body>
 </html>
